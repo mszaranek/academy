@@ -1,12 +1,14 @@
 package solutions.autorun.academy.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@EqualsAndHashCode(exclude={"users","systems","invoices","projRoles"})
 @Entity
 public class Project {
 

@@ -8,7 +8,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@EqualsAndHashCode(exclude="appRoles")
 @Entity
+@Table(name="\"user\"")
 public class User {
 
     @Id
@@ -36,8 +38,8 @@ public class User {
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user")
     private Set<Task> invoices = new HashSet<>();
 
-    @ManyToOne
-    private ProjRole role;
+//    @ManyToOne
+//    private ProjRole role;
 
     public User(){
 

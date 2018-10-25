@@ -1,5 +1,6 @@
 package solutions.autorun.academy.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,6 +16,7 @@ public class AppRole {
     private Long id;
     private String roleName;
     @ManyToMany(cascade = {CascadeType.MERGE}, mappedBy = "appRoles")
+    @JsonBackReference
     private Set<User> users = new HashSet<>();
 
     public AppRole(){

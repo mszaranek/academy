@@ -61,9 +61,9 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
                 .from(qInvoice)
                 .select(qInvoice.id, qInvoice.amount, qInvoice.paid, qInvoice.date, qInvoice.validationStatus)
                 .join(qInvoice.projects, qProject)
-                .on(qInvoice.projects.any().id.as("project_id").eq(qProject.id))
+                .on(qInvoice.projects.any().id.eq(qProject.id))
                 .join(qInvoice.user, qUser)
-                .on(qInvoice.user.id.as("user_id").eq(qUser.id))
+                .on(qInvoice.user.id.eq(qUser.id))
                 .where(qInvoice.user.id.eq(userId), (qInvoice.projects.any().id.eq(projectId)))
                 .fetch());
         Set<Invoice> invoices = new HashSet<>();
@@ -78,6 +78,7 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
                     .build());
         }
         return invoices;
+
     }
 }
 

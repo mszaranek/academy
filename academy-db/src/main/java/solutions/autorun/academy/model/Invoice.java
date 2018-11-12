@@ -31,8 +31,8 @@ public class Invoice {
     private String validationStatus;
 
     @ManyToMany
-    @JoinTable(name = "project_invoice", joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "invoice_id"))
+    @JoinTable(name = "project_invoice", joinColumns = @JoinColumn(name = "invoice_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id"))
     @JsonBackReference
     private Set<Project> projects = new HashSet<>();
 

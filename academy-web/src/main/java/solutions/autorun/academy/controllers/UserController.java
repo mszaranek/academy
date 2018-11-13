@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import solutions.autorun.academy.model.Invoice;
+import solutions.autorun.academy.model.Task;
 import solutions.autorun.academy.model.User;
 import solutions.autorun.academy.services.UserService;
 import solutions.autorun.academy.services.InvoiceService;
@@ -60,9 +61,21 @@ public class UserController {
 
         return new ResponseEntity<>(userService.findUserById(id).getInvoices(), HttpStatus.OK);
     }
+    @GetMapping(value = "user/{userId}/projects/{projectId}/tasks")
+    public ResponseEntity<Set<Task>> showUsersTasksInProject(@PathVariable Long userId, @PathVariable Long projectId) {
+
+        return new ResponseEntity<>(userService.getUsersTasksInProject(userId,projectId), HttpStatus.OK);
+    }
+
     @GetMapping(value = "user/{userId}/projects/{projectId}/invoices")
     public ResponseEntity<Set<Invoice>> showUsersInvoicesInProject(@PathVariable Long userId, @PathVariable Long projectId) {
 
         return new ResponseEntity<>(userService.findUserInvoicesInProject(userId,projectId), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "user/{userId}/projects/{projectId}/tasks/{taskId}")
+    public ResponseEntity<Set<Task>> showTaskDetails(@PathVariable Long userId, @PathVariable Long projectId, @PathVariable Long taskId) {
+
+        return new ResponseEntity<>(userService.getTaskDetail(userId,projectId,taskId), HttpStatus.OK);
     }
 }

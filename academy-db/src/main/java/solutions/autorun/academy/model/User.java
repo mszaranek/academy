@@ -57,4 +57,8 @@ public class User {
 //    @ManyToOne
 //    private ProjRole role;
 
+//    public User (Long id){
+//        this.id=id;
+//    }
+
 }

@@ -80,5 +80,57 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
         return invoices;
 
     }
+
+    @Override
+    public Set<Task> getUsersTasksInProject(Long userId, Long projectId) {
+        JPAQuery<Task> query = new JPAQuery<>(entityManager);
+        QProject qProject = QProject.project;
+        QSystem qSystem = QSystem.system;
+        QTask qTask = QTask.task;
+        QUser qUser = QUser.user;
+        return new HashSet<>(query
+                .from(qTask)
+                //.select(qTask.id, qInvoice.amount, qInvoice.paid, qInvoice.date, qInvoice.validationStatus)
+                .join(qTask.system, qSystem)
+                .on(qTask.system.id.eq(qSystem.id))
+                .join(qSystem.projects, qProject)
+                .on(qSystem.projects.any().id.eq(qSystem.id))
+                .join(qTask.user, qUser)
+                .on(qTask.user.id.eq(qUser.id))
+                .where(qUser.id.eq(userId), qProject.id.eq(projectId))
+                .fetch());
+//        Set<Task> tasks = new HashSet<>();
+//
+//        for (Tuple t : tuples) {
+//            tasks.add(Ta.builder()
+//                    .id(t.get(qInvoice.id))
+//                    .amount(t.get(qInvoice.amount))
+//                    .paid(t.get(qInvoice.paid))
+//                    .date(t.get(qInvoice.date))
+//                    .validationStatus(t.get(qInvoice.validationStatus))
+//                    .build());
+//        }
+//        return tasks;
+    }
+
+    @Override
+    public Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId) {
+        JPAQuery<Task> query = new JPAQuery<>(entityManager);
+        QProject qProject = QProject.project;
+        QSystem qSystem = QSystem.system;
+        QTask qTask = QTask.task;
+        QUser qUser = QUser.user;
+        return new HashSet<>(query
+                .from(qTask)
+                //.select(qTask.id, qInvoice.amount, qInvoice.paid, qInvoice.date, qInvoice.validationStatus)
+                .join(qTask.system, qSystem)
+                .on(qTask.system.id.eq(qSystem.id))
+                .join(qSystem.projects, qProject)
+                .on(qSystem.projects.any().id.eq(qSystem.id))
+                .join(qTask.user, qUser)
+                .on(qTask.user.id.eq(qUser.id))
+                .where(qUser.id.eq(userId), qProject.id.eq(projectId), qTask.id.eq(taskId))
+                .fetch());
+    }
 }
 

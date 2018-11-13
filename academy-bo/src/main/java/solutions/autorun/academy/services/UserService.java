@@ -2,6 +2,7 @@ package solutions.autorun.academy.services;
 
 import com.querydsl.core.Tuple;
 import solutions.autorun.academy.model.Invoice;
+import solutions.autorun.academy.model.Task;
 import solutions.autorun.academy.model.User;
 
 import java.util.Set;
@@ -19,4 +20,8 @@ public interface UserService {
     void deleteUser(Long id);
 
     Set<Invoice> findUserInvoicesInProject (Long userId, Long projectId);
+
+    Set<Task> getUsersTasksInProject(Long userId, Long projectId);
+
+    Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId);
 }

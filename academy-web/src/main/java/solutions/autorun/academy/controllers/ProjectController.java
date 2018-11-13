@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.model.Project;
+import solutions.autorun.academy.model.Task;
 import solutions.autorun.academy.services.ProjectService;
 
 import java.util.Set;
@@ -55,8 +56,8 @@ public class ProjectController {
         return new ResponseEntity<>(projectService.findProjectById(id).getInvoices(), HttpStatus.OK);
     }
 
-//    @GetMapping(value = "project/{id}/invoices")
-//    public ResponseEntity<Set<Invoice>> findProjectsTasks(@PathVariable Long id) {
-//        return new ResponseEntity<>(projectService.findProjectById(id).get, HttpStatus.OK);
-//    }
+    @GetMapping(value = "project/{id}/tasks")
+    public ResponseEntity<Set<Task>> findProjectsTasks(@PathVariable Long id) {
+        return new ResponseEntity<>(projectService.getTasks(id), HttpStatus.OK);
+    }
 }

@@ -2,13 +2,17 @@ package solutions.autorun.academy.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Data
 @Entity
+@Builder
+@EqualsAndHashCode(exclude = "system")
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "number")
@@ -29,7 +33,4 @@ public class Task {
     @ManyToOne
     private System system;
 
-    public Task(){
-
-    }
 }

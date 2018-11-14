@@ -19,7 +19,7 @@ public class Sprint {
     @OneToMany
     private Set<Task> tasks = new HashSet<>();
 
-    public Sprint(){
+    public Sprint() {
 
     }
 }

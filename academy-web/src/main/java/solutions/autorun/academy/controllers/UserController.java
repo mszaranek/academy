@@ -1,6 +1,6 @@
 package solutions.autorun.academy.controllers;
 
-import com.querydsl.core.Tuple;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,11 +9,9 @@ import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.model.Task;
 import solutions.autorun.academy.model.User;
 import solutions.autorun.academy.services.UserService;
-import solutions.autorun.academy.services.InvoiceService;
+import solutions.autorun.academy.views.Views;
 
-import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @RestController
@@ -21,14 +19,14 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
-    private final InvoiceService invoiceService;
 
+    @JsonView(Views.UserView.class)
     @GetMapping(value = "/users")
     public ResponseEntity<Set<User>> showUsers() {
         long startTime = System.currentTimeMillis();
         Set<User> users = userService.getUsers();
-        long estimatedTime = (System.currentTimeMillis() - startTime)/1000;
-        System.out.println("Time: "+estimatedTime);
+        long estimatedTime = (System.currentTimeMillis() - startTime) / 1000;
+        System.out.println("Time: " + estimatedTime);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -39,6 +37,7 @@ public class UserController {
     }
 
     @GetMapping(value = "user/{id}")
+    @JsonView(Views.UserView.class)
     public ResponseEntity<User> findUser(@PathVariable Long id) {
         return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
     }
@@ -57,25 +56,30 @@ public class UserController {
     }
 
     @GetMapping(value = "user/{id}/invoices")
+    @JsonView(Views.InvoiceView.class)
     public ResponseEntity<Set<Invoice>> showUsersInvoices(@PathVariable Long id) {
 
         return new ResponseEntity<>(userService.findUserById(id).getInvoices(), HttpStatus.OK);
     }
+
     @GetMapping(value = "user/{userId}/projects/{projectId}/tasks")
+    @JsonView(Views.UsersTaskView.class)
     public ResponseEntity<Set<Task>> showUsersTasksInProject(@PathVariable Long userId, @PathVariable Long projectId) {
 
-        return new ResponseEntity<>(userService.getUsersTasksInProject(userId,projectId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUsersTasksInProject(userId, projectId), HttpStatus.OK);
     }
 
     @GetMapping(value = "user/{userId}/projects/{projectId}/invoices")
+    @JsonView(Views.InvoiceView.class)
     public ResponseEntity<Set<Invoice>> showUsersInvoicesInProject(@PathVariable Long userId, @PathVariable Long projectId) {
 
-        return new ResponseEntity<>(userService.findUserInvoicesInProject(userId,projectId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.findUserInvoicesInProject(userId, projectId), HttpStatus.OK);
     }
 
     @GetMapping(value = "user/{userId}/projects/{projectId}/tasks/{taskId}")
+    @JsonView(Views.ProjectsTaskView.class)
     public ResponseEntity<Set<Task>> showTaskDetails(@PathVariable Long userId, @PathVariable Long projectId, @PathVariable Long taskId) {
 
-        return new ResponseEntity<>(userService.getTaskDetail(userId,projectId,taskId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getTaskDetail(userId, projectId, taskId), HttpStatus.OK);
     }
 }

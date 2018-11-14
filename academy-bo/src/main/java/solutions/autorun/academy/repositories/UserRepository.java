@@ -9,8 +9,9 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @EntityGraph(attributePaths = {"tasks", "invoices","projects","appRoles"})
+    @EntityGraph(value="userEntityGraph")
     List<User> findAll();
-   @EntityGraph(attributePaths = {"tasks", "invoices","projects","appRoles"})
+
+   @EntityGraph(value="userEntityGraph")
     Optional<User> findById(Long aLong);
 }

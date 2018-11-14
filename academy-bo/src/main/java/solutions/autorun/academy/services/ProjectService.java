@@ -1,6 +1,5 @@
 package solutions.autorun.academy.services;
 
-import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.model.Project;
 import solutions.autorun.academy.model.Task;
 

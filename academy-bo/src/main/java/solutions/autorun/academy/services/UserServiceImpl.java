@@ -3,7 +3,6 @@ package solutions.autorun.academy.services;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Service;
 import solutions.autorun.academy.exceptions.NotFoundException;
@@ -13,7 +12,6 @@ import solutions.autorun.academy.repositories.UserRepository;
 import javax.persistence.EntityManager;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -82,6 +80,7 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
     }
 
     @Override
+    @EntityGraph(value="taskEntityGraph")
     public Set<Task> getUsersTasksInProject(Long userId, Long projectId) {
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QProject qProject = QProject.project;
@@ -102,7 +101,7 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
 //        Set<Task> tasks = new HashSet<>();
 //
 //        for (Tuple t : tuples) {
-//            tasks.add(Ta.builder()
+//            tasks.add(Task.builder()
 //                    .id(t.get(qInvoice.id))
 //                    .amount(t.get(qInvoice.amount))
 //                    .paid(t.get(qInvoice.paid))
@@ -114,6 +113,7 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
     }
 
     @Override
+    @EntityGraph(value="taskEntityGraph")
     public Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId) {
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QProject qProject = QProject.project;

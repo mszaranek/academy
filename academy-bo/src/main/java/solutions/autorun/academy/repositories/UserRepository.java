@@ -37,5 +37,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findAllByUsernameNot(Pageable pageable, String username);
 
+    @EntityGraph(value="userEntityGraph")
+    Optional<User> findByEmail(String email);
 
+    @EntityGraph(value="userEntityGraph")
+    Optional<User> findByUsername(String username);
 }

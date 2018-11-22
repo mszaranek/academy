@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.*;
+import solutions.autorun.academy.register.ValidEmail;
 import solutions.autorun.academy.views.Views;
 
 import javax.persistence.*;

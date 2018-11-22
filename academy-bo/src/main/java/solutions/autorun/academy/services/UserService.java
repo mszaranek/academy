@@ -24,4 +24,7 @@ public interface UserService {
 
     Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId);
 
+    boolean emailExist(String email);
+
+    boolean usernameExist(String username);
 }

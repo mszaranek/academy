@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.model.Task;
 import solutions.autorun.academy.model.User;
+import solutions.autorun.academy.model.UserDTO;
 import solutions.autorun.academy.services.UserService;
 import solutions.autorun.academy.views.Views;
 
@@ -30,10 +31,10 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+
     @PostMapping(value = "/users")
-    public ResponseEntity<Void> createUser(@RequestBody User user) {
-        userService.createUser(user);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<User> registerUser(@RequestBody UserDTO userDTO) throws Exception {
+        return new ResponseEntity<>(userService.registerUser(userDTO), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "user/{id}")

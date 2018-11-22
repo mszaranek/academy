@@ -4,8 +4,11 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import solutions.autorun.academy.exceptions.EmailExistsException;
 import solutions.autorun.academy.exceptions.NotFoundException;
+import solutions.autorun.academy.exceptions.UsernameExistsException;
 import solutions.autorun.academy.model.*;
 import solutions.autorun.academy.repositories.UserRepository;
 
@@ -19,6 +22,7 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
 
     private final UserRepository userRepository;
     private final EntityManager entityManager;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Set<User> getUsers() {
@@ -26,9 +30,20 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
     }
 
     @Override
-    public void createUser(User user) {
-        user.setId(null);
-        userRepository.save(user);
+    public User registerUser(UserDTO userDTO) throws Exception {
+        if(emailExist(userDTO.getEmail())){
+            throw new EmailExistsException("e-mail is already in use");
+        }
+        if(usernameExist(userDTO.getUsername())){
+            throw new UsernameExistsException("username is already in use");
+        }
+
+        User user = new User();
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setEmail(userDTO.getEmail());
+        user.setUsername(userDTO.getUsername());
+
+        return userRepository.save(user);
     }
 
     @Override
@@ -131,6 +146,23 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
                 .on(qTask.user.id.eq(qUser.id))
                 .where(qUser.id.eq(userId), qProject.id.eq(projectId), qTask.id.eq(taskId))
                 .fetch());
+    }
+
+    @Override
+    public boolean emailExist(String email){
+        if (userRepository.findByEmail(email).isPresent())
+        {
+            return true;
+        }
+            return false;
+    }
+
+    @Override
+    public boolean usernameExist(String username) {
+        if (userRepository.findByUsername(username).isPresent()){
+            return true;
+        }
+        return false;
     }
 }
 

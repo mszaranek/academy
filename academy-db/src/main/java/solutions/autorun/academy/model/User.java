@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import solutions.autorun.academy.register.ValidEmail;
 import solutions.autorun.academy.views.Views;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.Set;
 

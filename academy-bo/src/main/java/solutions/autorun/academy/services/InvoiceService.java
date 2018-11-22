@@ -1,7 +1,6 @@
 package solutions.autorun.academy.services;
 
 import solutions.autorun.academy.model.Invoice;
-import solutions.autorun.academy.model.User;
 
 import java.util.Set;
 

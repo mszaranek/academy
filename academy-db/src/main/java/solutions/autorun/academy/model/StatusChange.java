@@ -10,7 +10,7 @@ import java.util.Date;
 public class StatusChange {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     private Invoice invoice;
@@ -21,7 +21,7 @@ public class StatusChange {
     private User creator;
     private String reason;
 
-    public StatusChange(){
+    public StatusChange() {
 
     }
 }

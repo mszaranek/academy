@@ -1,6 +1,5 @@
 package solutions.autorun.academy.services;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,7 +47,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Set<Task> getTasks(Long id){
+    public Set<Task> getTasks(Long id) {
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QProject qProject = QProject.project;
         QSystem qSystem = QSystem.system;
@@ -77,7 +76,7 @@ public class ProjectServiceImpl implements ProjectService {
 //        }
 //        return tasks;
 
-       return new HashSet<>(query
+        return new HashSet<>(query
                 .from(qTask)
 //                .select(qTask.id, qTask.number, qTask.user.id, qTask.estimate, qTask.status, qTask.type)
                 .join(qTask.system, qSystem)

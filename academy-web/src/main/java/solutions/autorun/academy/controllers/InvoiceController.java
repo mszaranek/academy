@@ -19,8 +19,8 @@ public class InvoiceController {
     public ResponseEntity<Set<Invoice>> showInvoices() {
         long startTime = System.currentTimeMillis();
         Set<Invoice> invoices = invoiceService.getInvoices();
-        long estimatedTime = (System.currentTimeMillis() - startTime)/1000;
-        System.out.println("Time: "+estimatedTime);
+        long estimatedTime = (System.currentTimeMillis() - startTime) / 1000;
+        System.out.println("Time: " + estimatedTime);
         return new ResponseEntity<>(invoices, HttpStatus.OK);
     }
 

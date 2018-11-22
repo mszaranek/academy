@@ -1,6 +1,5 @@
 package solutions.autorun.academy.services;
 
-import com.querydsl.core.Tuple;
 import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.model.Task;
 import solutions.autorun.academy.model.User;
@@ -19,9 +18,13 @@ public interface UserService {
 
     void deleteUser(Long id);
 
-    Set<Invoice> findUserInvoicesInProject (Long userId, Long projectId);
+    Set<Invoice> findUserInvoicesInProject(Long userId, Long projectId);
 
     Set<Task> getUsersTasksInProject(Long userId, Long projectId);
 
     Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId);
+
+    boolean emailExist(String email);
+
+    boolean usernameExist(String username);
 }

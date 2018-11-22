@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Data
-@EqualsAndHashCode(exclude="projects")
+@EqualsAndHashCode(exclude = {"projects","users"})
 @Entity
 public class ProjRole {
     @Id
@@ -22,7 +22,7 @@ public class ProjRole {
             inverseJoinColumns = @JoinColumn(name = "proj_role_id"))
     private Set<Project> projects;
 
-    public ProjRole(){
+    public ProjRole() {
 
     }
 }

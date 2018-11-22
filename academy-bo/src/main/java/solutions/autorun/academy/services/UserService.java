@@ -23,4 +23,5 @@ public interface UserService {
     Set<Task> getUsersTasksInProject(Long userId, Long projectId);
 
     Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId);
+
 }

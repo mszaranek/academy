@@ -17,4 +17,8 @@ public class Views {
     public static class InvoiceView {
 
     }
+
+    public static class UsersProjectsView {
+
+    }
 }

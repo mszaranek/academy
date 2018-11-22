@@ -22,7 +22,7 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonView(Views.UserView.class)
+    @JsonView({Views.UserView.class,Views.UsersProjectsView.class})
     private String name;
     private Double monthlyCost;
     private String status;

@@ -1,9 +1,9 @@
 package solutions.autorun.academy.services;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import solutions.autorun.academy.exceptions.NotFoundException;
 import solutions.autorun.academy.model.*;
@@ -19,6 +19,7 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
 
     private final UserRepository userRepository;
     private final EntityManager entityManager;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Set<User> getUsers() {
@@ -39,6 +40,8 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
 
     @Override
     public void updateUser(User user) {
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
         userRepository.save(user);
     }
 
@@ -55,32 +58,20 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
         QUser qUser = QUser.user;
         QInvoice qInvoice = QInvoice.invoice;
         QProject qProject = QProject.project;
-        HashSet<Tuple> tuples = new HashSet<>(query
+        return new HashSet<>(query
                 .from(qInvoice)
-                .select(qInvoice.id, qInvoice.amount, qInvoice.paid, qInvoice.date, qInvoice.validationStatus)
+                //.select(qInvoice.id, qInvoice.amount, qInvoice.paid, qInvoice.date, qInvoice.validationStatus)
                 .join(qInvoice.projects, qProject)
                 .on(qInvoice.projects.any().id.eq(qProject.id))
                 .join(qInvoice.user, qUser)
                 .on(qInvoice.user.id.eq(qUser.id))
                 .where(qInvoice.user.id.eq(userId), (qInvoice.projects.any().id.eq(projectId)))
                 .fetch());
-        Set<Invoice> invoices = new HashSet<>();
-
-        for (Tuple t : tuples) {
-            invoices.add(Invoice.builder()
-                    .id(t.get(qInvoice.id))
-                    .amount(t.get(qInvoice.amount))
-                    .paid(t.get(qInvoice.paid))
-                    .date(t.get(qInvoice.date))
-                    .validationStatus(t.get(qInvoice.validationStatus))
-                    .build());
-        }
-        return invoices;
 
     }
 
     @Override
-    @EntityGraph(value="taskEntityGraph")
+    @EntityGraph(value = "taskEntityGraph")
     public Set<Task> getUsersTasksInProject(Long userId, Long projectId) {
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QProject qProject = QProject.project;
@@ -113,7 +104,7 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
     }
 
     @Override
-    @EntityGraph(value="taskEntityGraph")
+    @EntityGraph(value = "taskEntityGraph")
     public Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId) {
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QProject qProject = QProject.project;
@@ -133,4 +124,6 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
                 .fetch());
     }
 }
+
+
 

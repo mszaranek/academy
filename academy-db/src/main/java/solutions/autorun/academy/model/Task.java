@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @Entity
 @Builder
-@EqualsAndHashCode(exclude = "system")
+@EqualsAndHashCode(exclude = {"system","user","sprint"})
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIdentityInfo(

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
- 
+
     @EntityGraph(value="userEntityGraph")
     List<User> findAll();
 
@@ -21,4 +21,25 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @EntityGraph(value="userEntityGraph")
     Optional<User> findByUsername(String username);
+
+    //Optional<User> findOneByActivationKey(String activationKey);
+
+    //List<User> findAllByActivatedIsFalseAndCreatedDateBefore(Instant dateTime);
+
+    //Optional<User> findOneByResetKey(String resetKey);
+
+    Optional<User> findOneByEmailIgnoreCase(String email);
+
+    Optional<User> findOneByUsername(String username);
+
+    @EntityGraph(attributePaths = "appRoles")
+    Optional<User> findOneWithAppRolesById(Long id);
+
+    @EntityGraph(attributePaths = "appRoles")
+    Optional<User> findOneWithAppRolesByUsername(String username);
+
+    @EntityGraph(attributePaths = "appRoles")
+    Optional<User> findOneWithAppRolesByEmail(String email);
+
+    Page<User> findAllByUsernameNot(Pageable pageable, String username);
 }

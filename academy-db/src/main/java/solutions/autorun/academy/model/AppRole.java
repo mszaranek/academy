@@ -4,15 +4,15 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 import solutions.autorun.academy.views.Views;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
 @Entity
+@EqualsAndHashCode(exclude = "users")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
@@ -29,5 +29,33 @@ public class AppRole {
 
     public AppRole() {
 
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getRoleName() {
+        return this.roleName;
+    }
+
+    public Set<User> getUsers() {
+        return this.users;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    public String toString() {
+        return "AppRole(id=" + this.getId() + ", roleName=" + this.getRoleName() + ", users=" + this.getUsers() + ")";
     }
 }

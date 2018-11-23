@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import solutions.autorun.academy.model.Invoice;
+import solutions.autorun.academy.model.Project;
 import solutions.autorun.academy.model.Task;
 import solutions.autorun.academy.model.User;
 import solutions.autorun.academy.model.UserDTO;
@@ -57,13 +59,14 @@ public class UserController {
     }
 
     @GetMapping(value = "user/{id}/invoices")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
     @JsonView(Views.InvoiceView.class)
     public ResponseEntity<Set<Invoice>> showUsersInvoices(@PathVariable Long id) {
-
         return new ResponseEntity<>(userService.findUserById(id).getInvoices(), HttpStatus.OK);
     }
 
     @GetMapping(value = "user/{userId}/projects/{projectId}/tasks")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#userId)")
     @JsonView(Views.UsersTaskView.class)
     public ResponseEntity<Set<Task>> showUsersTasksInProject(@PathVariable Long userId, @PathVariable Long projectId) {
 
@@ -71,6 +74,7 @@ public class UserController {
     }
 
     @GetMapping(value = "user/{userId}/projects/{projectId}/invoices")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#userId)")
     @JsonView(Views.InvoiceView.class)
     public ResponseEntity<Set<Invoice>> showUsersInvoicesInProject(@PathVariable Long userId, @PathVariable Long projectId) {
 
@@ -78,9 +82,18 @@ public class UserController {
     }
 
     @GetMapping(value = "user/{userId}/projects/{projectId}/tasks/{taskId}")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#userId)")
     @JsonView(Views.ProjectsTaskView.class)
     public ResponseEntity<Set<Task>> showTaskDetails(@PathVariable Long userId, @PathVariable Long projectId, @PathVariable Long taskId) {
 
         return new ResponseEntity<>(userService.getTaskDetail(userId, projectId, taskId), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "user/{userId}/projects")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#userId)")
+    @JsonView(Views.UsersProjectsView.class)
+    public ResponseEntity<Set<Project>> showUsersProjects(@PathVariable Long userId) {
+
+        return new ResponseEntity<>(userService.findUserById(userId).getProjects(), HttpStatus.OK);
     }
 }

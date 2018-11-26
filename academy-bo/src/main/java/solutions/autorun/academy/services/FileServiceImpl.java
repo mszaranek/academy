@@ -65,4 +65,46 @@ public class FileServiceImpl implements FileService {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Override
+    public InputStream getFile(String fileName){
+        try {
+            MinioClient minioClient = new MinioClient("https://play.minio.io:9000", "Q3AM3UQ867SPQQA43P2F",
+                    "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG");
+
+            minioClient.statObject("invoicesbucket", fileName);
+
+
+           return minioClient.getObject("invoicesbucket", fileName);
+
+
+
+        } catch (MinioException e) {
+            System.out.println("Error occurred: " + e);
+            return null;
+        }
+
+        catch (
+                IOException e) {
+            System.out.println("Error occurred: " + e);
+            return null;
+        }
+
+        catch (
+                NoSuchAlgorithmException e) {
+            System.out.println("Error occurred: " + e);
+            return null;
+        }
+        catch (
+                InvalidKeyException e) {
+            System.out.println("Error occurred: " + e);
+            return null;
+        }
+
+        catch (
+                XmlPullParserException e) {
+            System.out.println("Error occurred: " + e);
+            return null;
+        }
+    }
 }

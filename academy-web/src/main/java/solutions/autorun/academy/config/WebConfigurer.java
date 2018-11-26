@@ -2,17 +2,11 @@ package solutions.autorun.academy.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.server.WebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @Configuration
 public class WebConfigurer {
@@ -36,10 +30,15 @@ public class WebConfigurer {
         return new CorsFilter(source);
     }
 
-    @Bean(name="multipartResolver")
-    public MultipartResolver multipartResolver() {
-        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(500000000);
-        return multipartResolver;
-    }
+//    @Bean
+//    public MultipartConfigElement multipartConfigElement() {
+//        return new MultipartConfigElement("");
+//    }
+//
+//    @Bean(name="multipartResolver")
+//    public MultipartResolver multipartResolver() {
+//        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+//        multipartResolver.setMaxUploadSize(500000000);
+//        return multipartResolver;
+//    }
 }

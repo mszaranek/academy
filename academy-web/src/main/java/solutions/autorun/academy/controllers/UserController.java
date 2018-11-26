@@ -38,7 +38,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "user/{id}")
+    @GetMapping(value = "users/{id}")
     @JsonView(Views.UserView.class)
     public ResponseEntity<User> findUser(@PathVariable Long id) {
         return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
@@ -51,20 +51,20 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "user/{id}")
+    @DeleteMapping(value = "users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(value = "user/{id}/invoices")
+    @GetMapping(value = "users/{id}/invoices")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
     @JsonView(Views.InvoiceView.class)
     public ResponseEntity<Set<Invoice>> showUsersInvoices(@PathVariable Long id) {
         return new ResponseEntity<>(userService.findUserById(id).getInvoices(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "user/{userId}/projects/{projectId}/tasks")
+    @GetMapping(value = "users/{userId}/projects/{projectId}/tasks")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#userId)")
     @JsonView(Views.UsersTaskView.class)
     public ResponseEntity<Set<Task>> showUsersTasksInProject(@PathVariable Long userId, @PathVariable Long projectId) {
@@ -72,7 +72,7 @@ public class UserController {
         return new ResponseEntity<>(userService.getUsersTasksInProject(userId, projectId), HttpStatus.OK);
     }
 
-    @GetMapping(value = "user/{userId}/projects/{projectId}/invoices")
+    @GetMapping(value = "users/{userId}/projects/{projectId}/invoices")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#userId)")
     @JsonView(Views.InvoiceView.class)
     public ResponseEntity<Set<Invoice>> showUsersInvoicesInProject(@PathVariable Long userId, @PathVariable Long projectId) {
@@ -80,7 +80,7 @@ public class UserController {
         return new ResponseEntity<>(userService.findUserInvoicesInProject(userId, projectId), HttpStatus.OK);
     }
 
-    @GetMapping(value = "user/{userId}/projects/{projectId}/tasks/{taskId}")
+    @GetMapping(value = "users/{userId}/projects/{projectId}/tasks/{taskId}")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#userId)")
     @JsonView(Views.ProjectsTaskView.class)
     public ResponseEntity<Set<Task>> showTaskDetails(@PathVariable Long userId, @PathVariable Long projectId, @PathVariable Long taskId) {
@@ -88,7 +88,7 @@ public class UserController {
         return new ResponseEntity<>(userService.getTaskDetail(userId, projectId, taskId), HttpStatus.OK);
     }
 
-    @GetMapping(value = "user/{userId}/projects")
+    @GetMapping(value = "users/{userId}/projects")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#userId)")
     @JsonView(Views.UsersProjectsView.class)
     public ResponseEntity<Set<Project>> showUsersProjects(@PathVariable Long userId) {

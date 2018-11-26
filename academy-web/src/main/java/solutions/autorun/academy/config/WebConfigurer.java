@@ -11,6 +11,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @Configuration
 public class WebConfigurer {
@@ -23,7 +25,8 @@ public class WebConfigurer {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
-        config.addAllowedMethod(HttpMethod.POST);
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
 //        if (config.getAllowedOrigins() != null && !config.getAllowedOrigins().isEmpty()) {
 //            log.debug("Registering CORS filter");
 //            source.registerCorsConfiguration("/api/**", config);
@@ -31,5 +34,12 @@ public class WebConfigurer {
 //            source.registerCorsConfiguration("/v2/api-docs", config);
 //        }
         return new CorsFilter(source);
+    }
+
+    @Bean(name="multipartResolver")
+    public MultipartResolver multipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setMaxUploadSize(500000000);
+        return multipartResolver;
     }
 }

@@ -101,8 +101,9 @@ public class UserController {
     @PostMapping(value = "users/{id}/invoices/add")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
     @Transactional
+    @JsonView(Views.InvoiceCreationFirstStepView.class)
     //@JsonView(Views.InvoiceView.class)
-    public ResponseEntity<Long> addUsersInvoice(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file, @RequestParam(value = "name") String fileName) {
+    public ResponseEntity<Invoice> addUsersInvoice(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file, @RequestParam(value = "name") String fileName) {
         return new ResponseEntity<>(userService.addInvoice(file,fileName,id), HttpStatus.OK);
     }
 }

@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long addInvoice(MultipartFile file, String fileName, Long userId){
+    public Invoice addInvoice(MultipartFile file, String fileName, Long userId){
         try {
             MinioClient minioClient = new MinioClient(minioEndpoint, minioAccessKey,
                     minioSecretKey);
@@ -178,10 +178,11 @@ public class UserServiceImpl implements UserService {
             Invoice invoice = new Invoice();
             invoice.setUser(userRepository.findById(userId).get());
             invoice.setFileName(fileName);
+            invoice.setLifeCycleStatus("uploaded");
             invoiceRepository.save(invoice);
 
 
-            return invoice.getId();
+            return invoice;
 
 
         } catch (

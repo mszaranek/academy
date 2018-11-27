@@ -25,6 +25,6 @@ public interface UserService {
 
     Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId);
 
-    Long addInvoice(MultipartFile file, String fileName, Long userId);
+    Invoice addInvoice(MultipartFile file, String fileName, Long userId);
 
 }

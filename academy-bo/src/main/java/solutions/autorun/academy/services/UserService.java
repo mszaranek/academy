@@ -1,5 +1,6 @@
 package solutions.autorun.academy.services;
 
+import org.springframework.web.multipart.MultipartFile;
 import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.model.Task;
 import solutions.autorun.academy.model.User;
@@ -23,5 +24,7 @@ public interface UserService {
     Set<Task> getUsersTasksInProject(Long userId, Long projectId);
 
     Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId);
+
+    Long addInvoice(MultipartFile file, String fileName, Long userId);
 
 }

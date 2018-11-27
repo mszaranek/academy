@@ -38,6 +38,20 @@ public class Invoice {
     @JsonView({Views.UserView.class,Views.InvoiceView.class})
     private String validationStatus;
 
+    @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    private String currency;
+
+    @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    private Long hours;
+
+    @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    private Long vat;
+
+    @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    private Date payday;
+
+    //@JsonView({Views.UserView.class,Views.InvoiceView.class})
+    private String fileName;
     @ManyToMany
     @JoinTable(name = "project_invoice", joinColumns = @JoinColumn(name = "invoice_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id"))

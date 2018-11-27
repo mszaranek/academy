@@ -1,25 +1,57 @@
 package solutions.autorun.academy.services;
 
 import com.querydsl.jpa.impl.JPAQuery;
+import io.minio.MinioClient;
+import io.minio.errors.MinioException;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.authentication.UserServiceBeanDefinitionParser;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.xmlpull.v1.XmlPullParserException;
 import solutions.autorun.academy.exceptions.NotFoundException;
 import solutions.autorun.academy.model.*;
+import solutions.autorun.academy.repositories.InvoiceRepository;
 import solutions.autorun.academy.repositories.UserRepository;
 
 import javax.persistence.EntityManager;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.System;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
-public class UserServiceImpl implements solutions.autorun.academy.services.UserService {
+public class UserServiceImpl implements UserService {
+
+    @Value("${solutions.autorun.academy.minio.endpoint}")
+    String minioEndpoint;
+    @Value("${solutions.autorun.academy.minio.accessKey}")
+    String minioAccessKey;
+    @Value("${solutions.autorun.academy.minio.secretKey}")
+    String minioSecretKey;
+    @Value("${solutions.autorun.academy.minio.bucket}")
+    String minioBucket;
 
     private final UserRepository userRepository;
+    private final InvoiceRepository invoiceRepository;
     private final EntityManager entityManager;
     private final PasswordEncoder passwordEncoder;
+
+
+
+
+
+
 
     @Override
     public Set<User> getUsers() {
@@ -123,7 +155,66 @@ public class UserServiceImpl implements solutions.autorun.academy.services.UserS
                 .where(qUser.id.eq(userId), qProject.id.eq(projectId), qTask.id.eq(taskId))
                 .fetch());
     }
-}
+
+    @Override
+    public Long addInvoice(MultipartFile file, String fileName, Long userId){
+        try {
+            MinioClient minioClient = new MinioClient(minioEndpoint, minioAccessKey,
+                    minioSecretKey);
+            boolean found = minioClient.bucketExists(minioBucket);
+            if (found) {
+                System.out.println(minioBucket + " already exists");
+            } else {
+                minioClient.makeBucket(minioBucket);
+                System.out.println(minioBucket + " is created successfully");
+            }
+
+            byte [] byteArr=file.getBytes();
+            InputStream bais = new ByteArrayInputStream(byteArr);
+            minioClient.putObject(minioBucket, fileName, bais, bais.available(), "application/octet-stream");
+            bais.close();
+            System.out.println(fileName + " is uploaded successfully");
+
+            Invoice invoice = new Invoice();
+            invoice.setUser(userRepository.findById(userId).get());
+            invoice.setFileName(fileName);
+            invoiceRepository.save(invoice);
+
+
+            return invoice.getId();
+
+
+        } catch (
+                MinioException e) {
+            System.out.println("Error occurred: " + e);
+            return null;
+        }
+
+        catch (
+                IOException e) {
+            System.out.println("Error occurred: " + e);
+            return null;
+        }
+
+        catch (
+                NoSuchAlgorithmException e) {
+            System.out.println("Error occurred: " + e);
+            return null;
+        }
+        catch (
+                InvalidKeyException e) {
+            System.out.println("Error occurred: " + e);
+            return null;
+        }
+
+        catch (
+                XmlPullParserException e) {
+            System.out.println("Error occurred: " + e);
+            return null;
+        }
+    }
+    }
+
 
 
 

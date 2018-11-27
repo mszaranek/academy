@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.model.Project;
 import solutions.autorun.academy.model.Task;
@@ -13,6 +14,7 @@ import solutions.autorun.academy.model.User;
 import solutions.autorun.academy.services.UserService;
 import solutions.autorun.academy.views.Views;
 
+import javax.transaction.Transactional;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -94,5 +96,13 @@ public class UserController {
     public ResponseEntity<Set<Project>> showUsersProjects(@PathVariable Long userId) {
 
         return new ResponseEntity<>(userService.findUserById(userId).getProjects(), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "users/{id}/invoices/add")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @Transactional
+    //@JsonView(Views.InvoiceView.class)
+    public ResponseEntity<Long> addUsersInvoice(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file, @RequestParam(value = "name") String fileName) {
+        return new ResponseEntity<>(userService.addInvoice(file,fileName,id), HttpStatus.OK);
     }
 }

@@ -51,7 +51,7 @@ public class DomainUserDetailsService implements UserDetailsService {
     }
 
     private CustomUser createSpringSecurityUser(String lowercaseLogin, User user) {
-//        if (!user.getActivated()) {
+//        if (!user) {
 //            throw new UserNotActivatedException("User " + lowercaseLogin + " was not activated");
 //        }
         List<GrantedAuthority> grantedAuthorities = user.getAppRoles().stream()

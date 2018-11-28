@@ -291,4 +291,13 @@ public class UserServiceImpl implements UserService {
         return new HashSet<> (query.from(qtask).where(qtask.id.between(4,8)).fetch());
     }
 
+    @Override
+    public Invoice sendForApproval(Long invoiceId){
+
+        Invoice invoice = invoiceRepository.findById(invoiceId).get();
+        invoice.setLifeCycleStatus("Sent_for_approval");
+        invoiceRepository.save(invoice);
+        return invoice;
+    }
+
 }

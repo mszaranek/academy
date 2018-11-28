@@ -56,10 +56,10 @@
             <!--<version>0.0.1-SNAPSHOT</version>-->
             <!--<scope>compile</scope>-->
         <!--</dependency>-->
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-            <version>5.0.10.RELEASE</version>
-        </dependency>
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-context-support</artifactId>-->
+            <!--<version>5.0.10.RELEASE</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>io.github.jhipster</groupId>
             <artifactId>jhipster-framework</artifactId>

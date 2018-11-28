@@ -44,4 +44,6 @@ public interface UserService {
 
     Invoice addInvoice(MultipartFile file, String fileName, Long userId);
 
+    Invoice sendForApproval(Long invoiceId);
+
 }

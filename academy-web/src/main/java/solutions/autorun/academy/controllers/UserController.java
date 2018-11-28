@@ -168,4 +168,13 @@ public class UserController {
     public ResponseEntity<Invoice> attachTasksToInvoice(@PathVariable Long id, @RequestParam(value="invoiceId") Long invoiceId, @RequestBody String tasks) {
         return new ResponseEntity<>(userService.attachTasksToInvoice(invoiceId,tasks), HttpStatus.OK);
     }
+
+    @GetMapping(value = "users/{id}/invoices/add/4")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @Transactional
+    @JsonView(Views.InvoiceCreationThirdStepView.class)
+    //@JsonView(Views.InvoiceView.class)
+    public ResponseEntity<Invoice> sendInvoiceForApproval(@PathVariable Long id, @RequestParam(value="invoiceId") Long invoiceId) {
+        return new ResponseEntity<>(userService.sendForApproval(invoiceId), HttpStatus.OK);
+    }
 }

@@ -4,6 +4,7 @@ import com.google.api.client.json.JsonString;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.querydsl.jpa.impl.JPAQuery;
 import io.minio.MinioClient;
 import io.minio.errors.MinioException;
@@ -17,6 +18,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import solutions.autorun.academy.exceptions.NotFoundException;
 import solutions.autorun.academy.model.*;
 import solutions.autorun.academy.repositories.InvoiceRepository;
+import solutions.autorun.academy.repositories.TaskRepository;
 import solutions.autorun.academy.repositories.UserRepository;
 
 import javax.persistence.EntityManager;
@@ -24,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.System;
+import java.lang.reflect.Type;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
@@ -44,6 +47,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final InvoiceRepository invoiceRepository;
+    private final TaskRepository taskRepository;
     private final EntityManager entityManager;
     private final PasswordEncoder passwordEncoder;
 
@@ -211,7 +215,6 @@ public class UserServiceImpl implements UserService {
       Invoice invoiceInput = gson.fromJson(invoiceString, Invoice.class);
 
         Invoice invoice = invoiceRepository.findById(invoiceInput.getId()).orElseThrow(() -> new NotFoundException("Invoice not found"));
-
         invoice.setAmount(invoiceInput.getAmount());
         invoice.setCurrency(invoiceInput.getCurrency());
         invoice.setHours(invoiceInput.getHours());
@@ -219,12 +222,32 @@ public class UserServiceImpl implements UserService {
         invoice.setDate(invoiceInput.getDate());
         invoice.setPayday(invoiceInput.getPayday());
         invoice.setLifeCycleStatus("parsed");
-
         invoiceRepository.save(invoice);
-
         return invoice;
-
     }
 
+    @Override
+    public Invoice attachTasksToInvoice(Long invoiceId, String tasksString){
+        Gson gson = new GsonBuilder()//
+                .disableHtmlEscaping()//
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES) //
+                .setPrettyPrinting()//
+                .serializeNulls()//
+                .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
+                .create();
+        Type founderSetType = new TypeToken<HashSet<Task>>(){}.getType();
+        Set<Task> tasksInput = gson.fromJson(tasksString, founderSetType);
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
+        invoice.setTasks(tasksInput);
+        invoiceRepository.save(invoice);
+        return invoice;
+    }
+
+    @Override
+    public Set<Task> tempGetTasksFromProject(){
+        JPAQuery<Task> query = new JPAQuery<>(entityManager);
+        QTask qtask = QTask.task;
+        return new HashSet<> (query.from(qtask).where(qtask.id.between(4,8)).fetch());
+    }
 
 }

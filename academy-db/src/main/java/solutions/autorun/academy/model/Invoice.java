@@ -54,6 +54,10 @@ public class Invoice {
     @JsonView({Views.UserView.class,Views.InvoiceView.class, Views.InvoiceCreationSecondStepView.class})
     private String payday;
 
+    @JsonView({Views.InvoiceView.class,Views.InvoiceCreationThirdStepView.class})
+    @ManyToOne
+    private Set<Task> tasks;
+
     //@JsonView({Views.UserView.class,Views.InvoiceView.class})
     private String fileName;
     @ManyToMany

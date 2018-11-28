@@ -30,4 +30,8 @@ public interface UserService {
 
     Invoice insertValuesToInvoice(String invoiceString);
 
+    Invoice attachTasksToInvoice (Long invoiceId, String tasks);
+
+    Set<Task> tempGetTasksFromProject();
+
 }

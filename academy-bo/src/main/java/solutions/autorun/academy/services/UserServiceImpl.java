@@ -1,6 +1,7 @@
 package solutions.autorun.academy.services;
 
 import com.querydsl.jpa.impl.JPAQuery;
+import io.jsonwebtoken.lang.Arrays;
 import io.minio.MinioClient;
 import io.minio.errors.MinioException;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import solutions.autorun.academy.exceptions.NotFoundException;
 import solutions.autorun.academy.exceptions.UsernameAlreadyUsedException;
 import solutions.autorun.academy.model.*;
+import solutions.autorun.academy.repositories.AppRoleRepository;
 import solutions.autorun.academy.repositories.InvoiceRepository;
 import solutions.autorun.academy.repositories.UserRepository;
 import solutions.autorun.academy.repositories.VerificationTokenRepository;
@@ -45,6 +47,7 @@ public class UserServiceImpl implements UserService {
     @Value("${solutions.autorun.academy.minio.bucket}")
     String minioBucket;
 
+    private final AppRoleRepository appRoleRepository;
     private final UserRepository userRepository;
     private final VerificationTokenRepository tokenRepository;
     private final InvoiceRepository invoiceRepository;
@@ -94,6 +97,9 @@ public class UserServiceImpl implements UserService {
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());
         user.setActivated(false);
+        Set<AppRole> defaultRoles = new HashSet<>();
+        defaultRoles.add(appRoleRepository.findById(2l).get());
+        user.setAppRoles(defaultRoles);
         userRepository.save(user);
         return user;
     }

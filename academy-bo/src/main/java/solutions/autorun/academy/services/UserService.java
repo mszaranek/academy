@@ -1,8 +1,6 @@
 package solutions.autorun.academy.services;
 
-import solutions.autorun.academy.model.Invoice;
-import solutions.autorun.academy.model.Task;
-import solutions.autorun.academy.model.User;
+import solutions.autorun.academy.model.*;
 
 import java.util.Set;
 
@@ -10,7 +8,7 @@ public interface UserService {
 
     Set<User> getUsers();
 
-    void createUser(User user);
+    User createUser(UserDTO userDTO);
 
     User findUserById(Long id);
 
@@ -24,4 +22,9 @@ public interface UserService {
 
     Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId);
 
+    void createVerificationToken(User user, String token);
+
+    VerificationToken getVerificationToken(String VerificationToken);
+
+    void saveRegisteredUser(User user);
 }

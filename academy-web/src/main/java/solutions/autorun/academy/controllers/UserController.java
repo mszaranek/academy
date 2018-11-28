@@ -2,17 +2,20 @@ package solutions.autorun.academy.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import solutions.autorun.academy.model.Invoice;
-import solutions.autorun.academy.model.Project;
-import solutions.autorun.academy.model.Task;
-import solutions.autorun.academy.model.User;
+import org.springframework.web.context.request.WebRequest;
+import solutions.autorun.academy.Account.OnRegistrationCompleteEvent;
+import solutions.autorun.academy.model.*;
 import solutions.autorun.academy.services.UserService;
 import solutions.autorun.academy.views.Views;
 
+import java.lang.System;
+import java.util.Locale;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -21,6 +24,8 @@ import java.util.Set;
 public class UserController {
 
     private final UserService userService;
+    private MessageSource messages;
+    ApplicationEventPublisher eventPublisher;
 
     @JsonView(Views.UserView.class)
     @GetMapping(value = "/users")
@@ -32,10 +37,33 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/users")
-    public ResponseEntity<Void> createUser(@RequestBody User user) {
-        userService.createUser(user);
+    @PostMapping(value = "/register")
+    public ResponseEntity<Void> registerUser(@RequestBody UserDTO userDTO, WebRequest request) {
+        User user = userService.createUser(userDTO);
+        try {
+            String appUrl = request.getContextPath();
+            eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "/registrationConfirm")
+    public String confirmRegistration(WebRequest request, @RequestParam("token") String token){
+        Locale locale = request.getLocale();
+
+        VerificationToken verificationToken = userService.getVerificationToken(token);
+        if(verificationToken == null){
+            String message = messages.getMessage("auth.message.invalidToken", null, locale);
+            return message;
+        }
+
+        User user = verificationToken.getUser();
+        user.setActivated(true);
+        userService.saveRegisteredUser(user);
+        return "User activated";
+
     }
 
     @GetMapping(value = "users/{id}")

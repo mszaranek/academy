@@ -34,7 +34,7 @@ subgraphs = {
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.UserView.class)
     private Long id;
     @JsonView({Views.UserView.class,Views.ProjectsTaskView.class,Views.InvoiceView.class})

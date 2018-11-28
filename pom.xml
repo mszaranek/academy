@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+    <repositories>
+    <repository>
+        <id>atlassian-public</id>
+        <url>https://packages.atlassian.com/maven/repository/public</url>
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
+        </snapshots>
+        <releases>
+            <enabled>true</enabled>
+            <checksumPolicy>warn</checksumPolicy>
+        </releases>
+    </repository>
+    </repositories>
+
 
     <groupId>solutions.autorun</groupId>
     <artifactId>academy</artifactId>
@@ -23,7 +40,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
+
     <properties>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
@@ -43,11 +62,11 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.3</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>commons-fileupload</groupId>-->
+            <!--<artifactId>commons-fileupload</artifactId>-->
+            <!--<version>1.3</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -91,6 +110,32 @@
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.atlassian.jira/jira-api -->
+        <!--<dependency>-->
+            <!--<groupId>com.atlassian.jira</groupId>-->
+            <!--<artifactId>jira-api</artifactId>-->
+            <!--<version>7.0.0</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/jta/jta -->
+        <!--<dependency>-->
+            <!--<groupId>jta</groupId>-->
+            <!--<artifactId>jta</artifactId>-->
+            <!--<version>1.0.1b</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>com.google.code.gson</groupId>-->
+            <!--<artifactId>gson</artifactId>-->
+            <!--<version>2.8.5</version>-->
+        <!--</dependency>-->
+
+
+
+
     </dependencies>
 
     <build>

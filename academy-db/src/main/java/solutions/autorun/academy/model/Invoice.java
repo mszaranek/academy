@@ -24,6 +24,7 @@ import java.util.Set;
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(Views.InvoiceCreationFirstStepView.class)
     private Long id;
     @JsonView({Views.UserView.class, Views.InvoiceView.class})
     private Double amount;
@@ -38,6 +39,23 @@ public class Invoice {
     @JsonView({Views.UserView.class,Views.InvoiceView.class})
     private String validationStatus;
 
+    @JsonView({Views.UserView.class,Views.InvoiceView.class, Views.InvoiceCreationFirstStepView.class})
+    private String lifeCycleStatus;
+
+    @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    private String currency;
+
+    @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    private Long hours;
+
+    @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    private Long vat;
+
+    @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    private Date payday;
+
+    //@JsonView({Views.UserView.class,Views.InvoiceView.class})
+    private String fileName;
     @ManyToMany
     @JoinTable(name = "project_invoice", joinColumns = @JoinColumn(name = "invoice_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id"))

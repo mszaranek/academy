@@ -2,9 +2,6 @@ package solutions.autorun.academy.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.server.WebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,8 +10,6 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.util.Properties;
 
@@ -38,6 +33,8 @@ public class WebConfigurer {
 //            source.registerCorsConfiguration("/v2/api-docs", config);
 //        }
         return new CorsFilter(source);
+    }
+
     }
 
     @Bean(name="multipartResolver")
@@ -64,5 +61,5 @@ public class WebConfigurer {
         props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
 
         return mailSender;
-    }
+
 }

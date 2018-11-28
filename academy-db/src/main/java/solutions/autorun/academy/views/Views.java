@@ -21,4 +21,8 @@ public class Views {
     public static class UsersProjectsView {
 
     }
+
+    public static class InvoiceCreationFirstStepView {
+
+    }
 }

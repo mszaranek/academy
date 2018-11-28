@@ -10,6 +10,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.util.Properties;
 
@@ -35,14 +37,14 @@ public class WebConfigurer {
         return new CorsFilter(source);
     }
 
-    }
 
-    @Bean(name="multipartResolver")
-    public MultipartResolver multipartResolver() {
-        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(500000000);
-        return multipartResolver;
-    }
+
+//    @Bean(name="multipartResolver")
+//    public MultipartResolver multipartResolver() {
+//        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+//        multipartResolver.setMaxUploadSize(500000000);
+//        return multipartResolver;
+//    }
 
     @Bean
     public JavaMailSender javaMailSender() {
@@ -61,5 +63,5 @@ public class WebConfigurer {
         props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
 
         return mailSender;
-
+    }
 }

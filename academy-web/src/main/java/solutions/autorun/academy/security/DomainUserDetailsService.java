@@ -43,10 +43,10 @@ public class DomainUserDetailsService implements UserDetailsService {
                     .orElseThrow(() -> new UsernameNotFoundException("User with email " + username + " was not found in the database"));
         }
 
-        String lowercaseLogin = username.toLowerCase(Locale.ENGLISH);
-        return userRepository.findOneWithAppRolesByUsername(lowercaseLogin)
-                .map(user -> createSpringSecurityUser(lowercaseLogin, user))
-                .orElseThrow(() -> new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the database"));
+//        String lowercaseLogin = username.toLowerCase(Locale.ENGLISH);
+        return userRepository.findOneWithAppRolesByUsername(username)
+                .map(user -> createSpringSecurityUser(username, user))
+                .orElseThrow(() -> new UsernameNotFoundException("User " + username + " was not found in the database"));
 
     }
 

@@ -239,6 +239,7 @@ public class UserServiceImpl implements UserService {
         Set<Task> tasksInput = gson.fromJson(tasksString, founderSetType);
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
         invoice.setTasks(tasksInput);
+        invoice.setLifeCycleStatus("paired_with_tasks");
         invoiceRepository.save(invoice);
         return invoice;
     }

@@ -120,18 +120,18 @@ public class UserController {
     @GetMapping(value = "users/{id}/invoices/add/gettasks")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
     @Transactional
-    @JsonView(Views.InvoiceCreationSecondStepView.class)
+    @JsonView(Views.UsersTaskView.class)
     //@JsonView(Views.InvoiceView.class)
-    public ResponseEntity<Set<Task>> getTasksFromProject() {
+    public ResponseEntity<Set<Task>> getTasksFromProject(@PathVariable Long id) {
         return new ResponseEntity<>(userService.tempGetTasksFromProject(), HttpStatus.OK);
     }
 
     @PostMapping(value = "users/{id}/invoices/add/3")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
     @Transactional
-    @JsonView(Views.InvoiceCreationSecondStepView.class)
+    @JsonView(Views.InvoiceCreationThirdStepView.class)
     //@JsonView(Views.InvoiceView.class)
-    public ResponseEntity<Invoice> attachTasksToInvoice(@PathVariable Long id, @RequestParam Long invoiceId, @RequestBody String tasks) {
+    public ResponseEntity<Invoice> attachTasksToInvoice(@PathVariable Long id, @RequestParam(value="invoiceId") Long invoiceId, @RequestBody String tasks) {
         return new ResponseEntity<>(userService.attachTasksToInvoice(invoiceId,tasks), HttpStatus.OK);
     }
 }

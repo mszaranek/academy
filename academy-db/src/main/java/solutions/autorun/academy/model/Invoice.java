@@ -55,7 +55,7 @@ public class Invoice {
     private String payday;
 
     @JsonView({Views.InvoiceView.class,Views.InvoiceCreationThirdStepView.class})
-    @ManyToOne
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     private Set<Task> tasks;
 
     //@JsonView({Views.UserView.class,Views.InvoiceView.class})

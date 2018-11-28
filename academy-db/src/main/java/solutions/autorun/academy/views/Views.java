@@ -25,4 +25,12 @@ public class Views {
     public static class InvoiceCreationFirstStepView {
 
     }
+
+    public static class InvoiceCreationSecondStepView extends InvoiceCreationFirstStepView {
+
+    }
+
+    public static class InvoiceCreationThirdStepView extends InvoiceCreationSecondStepView{
+
+    }
 }

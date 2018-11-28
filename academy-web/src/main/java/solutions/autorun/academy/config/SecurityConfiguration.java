@@ -20,10 +20,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
+
+import solutions.autorun.academy.security.handlers.RestResponseEntityExceptionHandler;
 import solutions.autorun.academy.security.jwt.JWTConfigurer;
 import solutions.autorun.academy.security.jwt.TokenProvider;
 
 import javax.annotation.PostConstruct;
+import java.nio.file.AccessDeniedException;
 
 @Configuration
 @EnableWebSecurity
@@ -90,8 +93,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .disable()
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
-                .authenticationEntryPoint(problemSupport)
-                .accessDeniedHandler(problemSupport)
+                //.authenticationEntryPoint(problemSupport)
+                //.accessDeniedHandler(problemSupport)
                 .and()
                 .headers()
                 .frameOptions()

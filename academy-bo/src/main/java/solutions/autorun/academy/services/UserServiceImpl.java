@@ -1,16 +1,17 @@
 package solutions.autorun.academy.services;
 
+import com.google.api.client.json.JsonString;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.querydsl.jpa.impl.JPAQuery;
 import io.jsonwebtoken.lang.Arrays;
 import io.minio.MinioClient;
 import io.minio.errors.MinioException;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.authentication.UserServiceBeanDefinitionParser;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import solutions.autorun.academy.exceptions.EmailAlreadyUsedException;
@@ -21,6 +22,7 @@ import solutions.autorun.academy.exceptions.UsernameAlreadyUsedException;
 import solutions.autorun.academy.model.*;
 import solutions.autorun.academy.repositories.AppRoleRepository;
 import solutions.autorun.academy.repositories.InvoiceRepository;
+import solutions.autorun.academy.repositories.TaskRepository;
 import solutions.autorun.academy.repositories.UserRepository;
 import solutions.autorun.academy.repositories.VerificationTokenRepository;
 
@@ -29,6 +31,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.System;
+import java.lang.reflect.Type;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
@@ -51,13 +54,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final VerificationTokenRepository tokenRepository;
     private final InvoiceRepository invoiceRepository;
+    private final TaskRepository taskRepository;
     private final EntityManager entityManager;
     private final PasswordEncoder passwordEncoder;
-
-
-
-
-
 
 
     @Override
@@ -197,7 +196,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Invoice addInvoice(MultipartFile file, String fileName, Long userId){
+    public Invoice addInvoice(MultipartFile file, String fileName, Long userId) {
         try {
             MinioClient minioClient = new MinioClient(minioEndpoint, minioAccessKey,
                     minioSecretKey);
@@ -208,54 +207,88 @@ public class UserServiceImpl implements UserService {
                 minioClient.makeBucket(minioBucket);
                 System.out.println(minioBucket + " is created successfully");
             }
-
-            byte [] byteArr=file.getBytes();
+            byte[] byteArr = file.getBytes();
             InputStream bais = new ByteArrayInputStream(byteArr);
             minioClient.putObject(minioBucket, fileName, bais, bais.available(), "application/octet-stream");
             bais.close();
             System.out.println(fileName + " is uploaded successfully");
-
             Invoice invoice = new Invoice();
             invoice.setUser(userRepository.findById(userId).get());
             invoice.setFileName(fileName);
             invoice.setLifeCycleStatus("uploaded");
             invoiceRepository.save(invoice);
-
-
             return invoice;
-
 
         } catch (
                 MinioException e) {
             System.out.println("Error occurred: " + e);
             return null;
-        }
-
-        catch (
+        } catch (
                 IOException e) {
             System.out.println("Error occurred: " + e);
             return null;
-        }
-
-        catch (
+        } catch (
                 NoSuchAlgorithmException e) {
             System.out.println("Error occurred: " + e);
             return null;
-        }
-        catch (
+        } catch (
                 InvalidKeyException e) {
             System.out.println("Error occurred: " + e);
             return null;
-        }
-
-        catch (
+        } catch (
                 XmlPullParserException e) {
             System.out.println("Error occurred: " + e);
             return null;
         }
     }
+
+    @Override
+    public Invoice insertValuesToInvoice(String invoiceString) {
+      Gson gson = new GsonBuilder()//
+                .disableHtmlEscaping()//
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES) //
+                .setPrettyPrinting()//
+                .serializeNulls()//
+                .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
+                .create();
+
+      Invoice invoiceInput = gson.fromJson(invoiceString, Invoice.class);
+
+        Invoice invoice = invoiceRepository.findById(invoiceInput.getId()).orElseThrow(() -> new NotFoundException("Invoice not found"));
+        invoice.setAmount(invoiceInput.getAmount());
+        invoice.setCurrency(invoiceInput.getCurrency());
+        invoice.setHours(invoiceInput.getHours());
+        invoice.setVat(invoiceInput.getVat());
+        invoice.setDate(invoiceInput.getDate());
+        invoice.setPayday(invoiceInput.getPayday());
+        invoice.setLifeCycleStatus("parsed");
+        invoiceRepository.save(invoice);
+        return invoice;
     }
 
+    @Override
+    public Invoice attachTasksToInvoice(Long invoiceId, String tasksString){
+        Gson gson = new GsonBuilder()//
+                .disableHtmlEscaping()//
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES) //
+                .setPrettyPrinting()//
+                .serializeNulls()//
+                .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
+                .create();
+        Type founderSetType = new TypeToken<HashSet<Task>>(){}.getType();
+        Set<Task> tasksInput = gson.fromJson(tasksString, founderSetType);
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
+        invoice.setTasks(tasksInput);
+        invoice.setLifeCycleStatus("paired_with_tasks");
+        invoiceRepository.save(invoice);
+        return invoice;
+    }
 
+    @Override
+    public Set<Task> tempGetTasksFromProject(){
+        JPAQuery<Task> query = new JPAQuery<>(entityManager);
+        QTask qtask = QTask.task;
+        return new HashSet<> (query.from(qtask).where(qtask.id.between(4,8)).fetch());
+    }
 
-
+}

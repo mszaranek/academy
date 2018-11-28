@@ -1,6 +1,7 @@
 package solutions.autorun.academy.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.google.api.client.json.JsonString;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
@@ -138,6 +139,33 @@ public class UserController {
     @JsonView(Views.InvoiceCreationFirstStepView.class)
     //@JsonView(Views.InvoiceView.class)
     public ResponseEntity<Invoice> addUsersInvoice(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file, @RequestParam(value = "name") String fileName) {
-        return new ResponseEntity<>(userService.addInvoice(file,fileName,id), HttpStatus.OK);
+        return new ResponseEntity<>(userService.addInvoice(file,fileName,id), HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "users/{id}/invoices/add/2")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @Transactional
+    @JsonView(Views.InvoiceCreationSecondStepView.class)
+    //@JsonView(Views.InvoiceView.class)
+    public ResponseEntity<Invoice> addUsersInvoiceStepTwo(@PathVariable Long id, @RequestBody String invoice) {
+        return new ResponseEntity<>(userService.insertValuesToInvoice(invoice), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "users/{id}/invoices/add/gettasks")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @Transactional
+    @JsonView(Views.UsersTaskView.class)
+    //@JsonView(Views.InvoiceView.class)
+    public ResponseEntity<Set<Task>> getTasksFromProject(@PathVariable Long id) {
+        return new ResponseEntity<>(userService.tempGetTasksFromProject(), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "users/{id}/invoices/add/3")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @Transactional
+    @JsonView(Views.InvoiceCreationThirdStepView.class)
+    //@JsonView(Views.InvoiceView.class)
+    public ResponseEntity<Invoice> attachTasksToInvoice(@PathVariable Long id, @RequestParam(value="invoiceId") Long invoiceId, @RequestBody String tasks) {
+        return new ResponseEntity<>(userService.attachTasksToInvoice(invoiceId,tasks), HttpStatus.OK);
     }
 }

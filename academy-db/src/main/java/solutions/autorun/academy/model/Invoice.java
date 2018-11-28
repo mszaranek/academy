@@ -29,30 +29,34 @@ public class Invoice {
     @JsonView({Views.UserView.class, Views.InvoiceView.class})
     private Double amount;
     @ManyToOne
-    //@JsonBackReference
+    @JsonBackReference(value = "user_invoice")
     @JsonView({Views.UserView.class,Views.InvoiceView.class})
     private User user;
     @JsonView({Views.UserView.class,Views.InvoiceView.class})
     private Boolean paid;
     @JsonView({Views.UserView.class,Views.InvoiceView.class})
-    private Date date;
+    private String date;
     @JsonView({Views.UserView.class,Views.InvoiceView.class})
     private String validationStatus;
 
     @JsonView({Views.UserView.class,Views.InvoiceView.class, Views.InvoiceCreationFirstStepView.class})
     private String lifeCycleStatus;
 
-    @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    @JsonView({Views.UserView.class,Views.InvoiceView.class,Views.InvoiceCreationSecondStepView.class})
     private String currency;
 
-    @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    @JsonView({Views.UserView.class,Views.InvoiceView.class, Views.InvoiceCreationSecondStepView.class})
     private Long hours;
 
-    @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    @JsonView({Views.UserView.class,Views.InvoiceView.class,Views.InvoiceCreationSecondStepView.class})
     private Long vat;
 
-    @JsonView({Views.UserView.class,Views.InvoiceView.class})
-    private Date payday;
+    @JsonView({Views.UserView.class,Views.InvoiceView.class, Views.InvoiceCreationSecondStepView.class})
+    private String payday;
+
+    @JsonView({Views.InvoiceView.class,Views.InvoiceCreationThirdStepView.class})
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    private Set<Task> tasks;
 
     //@JsonView({Views.UserView.class,Views.InvoiceView.class})
     private String fileName;

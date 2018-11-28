@@ -27,20 +27,20 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonView({Views.UserView.class, Views.UsersTaskView.class})
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private Integer number;
     @ManyToOne
     @JsonView(Views.ProjectsTaskView.class)
     private User user;
-    @JsonView(Views.UsersTaskView.class)
+    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private Integer estimate;
     @JsonView(Views.UsersTaskView.class)
     private Date startDate;
     @JsonView(Views.UsersTaskView.class)
     private Date finishDate;
-    @JsonView(Views.UsersTaskView.class)
+    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private String status;
-    @JsonView(Views.UsersTaskView.class)
+    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private String type;
     @ManyToOne
     private Sprint sprint;

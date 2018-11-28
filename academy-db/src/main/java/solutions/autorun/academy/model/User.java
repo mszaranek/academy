@@ -71,7 +71,7 @@ public class User {
     @JsonView(Views.UserView.class)
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user"/*, fetch = FetchType.EAGER*/)
 //    @JoinColumn(name="user_id")
-//    @JsonBackReference
+    @JsonManagedReference(value = "user_invoice")
     private Set<Invoice> invoices = new HashSet<>();
 
     public Long getId() {

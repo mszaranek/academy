@@ -1,5 +1,6 @@
 package solutions.autorun.academy.services;
 
+import com.google.api.client.json.JsonString;
 import org.springframework.web.multipart.MultipartFile;
 import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.model.Task;
@@ -26,5 +27,7 @@ public interface UserService {
     Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId);
 
     Invoice addInvoice(MultipartFile file, String fileName, Long userId);
+
+    Invoice insertValuesToInvoice(String invoiceString);
 
 }

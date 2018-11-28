@@ -1,6 +1,7 @@
 package solutions.autorun.academy.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.google.api.client.json.JsonString;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -105,5 +106,14 @@ public class UserController {
     //@JsonView(Views.InvoiceView.class)
     public ResponseEntity<Invoice> addUsersInvoice(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file, @RequestParam(value = "name") String fileName) {
         return new ResponseEntity<>(userService.addInvoice(file,fileName,id), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "users/{id}/invoices/add/2")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @Transactional
+    @JsonView(Views.InvoiceCreationSecondStepView.class)
+    //@JsonView(Views.InvoiceView.class)
+    public ResponseEntity<Invoice> addUsersInvoice(@PathVariable Long id, @RequestBody String invoice) {
+        return new ResponseEntity<>(userService.insertValuesToInvoice(invoice), HttpStatus.OK);
     }
 }

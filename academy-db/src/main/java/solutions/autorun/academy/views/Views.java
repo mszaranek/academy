@@ -25,4 +25,8 @@ public class Views {
     public static class InvoiceCreationFirstStepView {
 
     }
+
+    public static class InvoiceCreationSecondStepView extends InvoiceCreationFirstStepView {
+
+    }
 }

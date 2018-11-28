@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.querydsl.jpa.impl.JPAQuery;
+import io.jsonwebtoken.lang.Arrays;
 import io.minio.MinioClient;
 import io.minio.errors.MinioException;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +14,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import solutions.autorun.academy.exceptions.EmailAlreadyUsedException;
 import org.springframework.web.multipart.MultipartFile;
 import org.xmlpull.v1.XmlPullParserException;
 import solutions.autorun.academy.exceptions.NotFoundException;
+import solutions.autorun.academy.exceptions.UsernameAlreadyUsedException;
 import solutions.autorun.academy.model.*;
+import solutions.autorun.academy.repositories.AppRoleRepository;
 import solutions.autorun.academy.repositories.InvoiceRepository;
 import solutions.autorun.academy.repositories.TaskRepository;
 import solutions.autorun.academy.repositories.UserRepository;
+import solutions.autorun.academy.repositories.VerificationTokenRepository;
 
 import javax.persistence.EntityManager;
 import java.io.ByteArrayInputStream;
@@ -45,7 +50,9 @@ public class UserServiceImpl implements UserService {
     @Value("${solutions.autorun.academy.minio.bucket}")
     String minioBucket;
 
+    private final AppRoleRepository appRoleRepository;
     private final UserRepository userRepository;
+    private final VerificationTokenRepository tokenRepository;
     private final InvoiceRepository invoiceRepository;
     private final TaskRepository taskRepository;
     private final EntityManager entityManager;
@@ -58,9 +65,42 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createUser(User user) {
-        user.setId(null);
+    public void createVerificationToken(User user, String token) {
+    VerificationToken myToken = new VerificationToken();
+    myToken.setToken(token);
+    myToken.setUser(user);
+    tokenRepository.save(myToken);
+    }
+
+    @Override
+    public void saveRegisteredUser(User user) {
         userRepository.save(user);
+    }
+
+    @Override
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return tokenRepository.findByToken(VerificationToken);
+    }
+
+    @Override
+    public User createUser(UserDTO userDTO) {
+        userRepository.findOneByUsername(userDTO.getUsername().toLowerCase())
+                .ifPresent(existingUser -> new UsernameAlreadyUsedException("Username is already in use"));
+        userRepository.findOneByEmailIgnoreCase(userDTO.getEmail())
+                .ifPresent(existingUser ->  new EmailAlreadyUsedException("Email is already in use"));
+        User user = new User();
+        String encryptedPassword = passwordEncoder.encode(userDTO.getPassword());
+        user.setUsername(userDTO.getUsername());
+        user.setPassword(encryptedPassword);
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setEmail(userDTO.getEmail());
+        user.setActivated(false);
+        Set<AppRole> defaultRoles = new HashSet<>();
+        defaultRoles.add(appRoleRepository.findById(2l).get());
+        user.setAppRoles(defaultRoles);
+        userRepository.save(user);
+        return user;
     }
 
     @Override

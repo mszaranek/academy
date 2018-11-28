@@ -106,6 +106,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/authenticate").permitAll()
+                .antMatchers("/register").permitAll()
+                .antMatchers("/registrationConfirm").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(securityConfigurerAdapter());

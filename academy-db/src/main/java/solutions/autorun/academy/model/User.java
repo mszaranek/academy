@@ -46,6 +46,8 @@ public class User {
     private String lastName;
     @JsonView(Views.UserView.class)
     private String email;
+    @JsonView(Views.UserView.class)
+    private boolean activated;
 
     @ManyToMany
     @JsonView(Views.UserView.class)
@@ -150,6 +152,14 @@ public class User {
 
     public void setInvoices(Set<Invoice> invoices) {
         this.invoices = invoices;
+    }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
     }
 
     public String toString() {

@@ -11,12 +11,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import solutions.autorun.academy.repositories.UserRepository;
 import solutions.autorun.academy.security.LoginForm;
+import solutions.autorun.academy.security.UserNotActivatedException;
 import solutions.autorun.academy.security.jwt.JWTFilter;
 import solutions.autorun.academy.security.jwt.TokenProvider;
 
@@ -38,22 +41,22 @@ public class UserJWTController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginForm loginForm) {
-        System.out.println("authorize init");
-        System.out.println(Keys.secretKeyFor(SignatureAlgorithm.HS512));
-
+       log.trace("authorize init");
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginForm.getUsername(),loginForm.getPassword());
 
-        System.out.println("authorize authenticationToken");
-        Authentication authentication = this.authenticationManager.authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("authorize SecurityContextHolder.getContext().setAuthentication(authentication");
-
-        String jwt = tokenProvider.createToken(authentication);
-        System.out.println("token: " + jwt);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-        return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
+        try {
+            Authentication authentication = this.authenticationManager.authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = tokenProvider.createToken(authentication);
+            log.trace("token: " + jwt);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+            return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
+        }
+        catch(AuthenticationException e){
+        return new ResponseEntity<>(new JWTToken(e.getMessage()), HttpStatus.UNAUTHORIZED);
+        }
     }
 
     /**

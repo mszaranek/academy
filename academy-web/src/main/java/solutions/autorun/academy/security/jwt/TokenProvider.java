@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import solutions.autorun.academy.security.CustomUser;
+import solutions.autorun.academy.security.UserNotActivatedException;
 
 import javax.annotation.PostConstruct;
 import java.security.Key;
@@ -66,19 +67,24 @@ public class TokenProvider {
     }
 
     public String createToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+        try {
+            String authorities = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(","));
 
-        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+            CustomUser customUser = (CustomUser) authentication.getPrincipal();
 
-        return Jwts.builder()
-                .setSubject(authentication.getName())
-                .setId(customUser.getId().toString())
-                .claim(AUTHORITIES_KEY, authorities)
-                .signWith(key,SignatureAlgorithm.HS512)
-                .setExpiration(new Date((new Date()).getTime() + validity))
-                .compact();
+            return Jwts.builder()
+                    .setSubject(authentication.getName())
+                    .setId(customUser.getId().toString())
+                    .claim(AUTHORITIES_KEY, authorities)
+                    .signWith(key, SignatureAlgorithm.HS512)
+                    .setExpiration(new Date((new Date()).getTime() + validity))
+                    .compact();
+        }
+        catch(UserNotActivatedException e){
+            return "User not activated";
+        }
     }
 
 

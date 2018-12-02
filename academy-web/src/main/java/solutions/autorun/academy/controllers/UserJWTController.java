@@ -55,7 +55,9 @@ public class UserJWTController {
             return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
         }
         catch(AuthenticationException e){
-        return new ResponseEntity<>(new JWTToken(e.getMessage()), HttpStatus.UNAUTHORIZED);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add("AuthenticationException:", e.getMessage());
+        return new ResponseEntity<>(new JWTToken(""), httpHeaders, HttpStatus.UNAUTHORIZED);
         }
     }
 

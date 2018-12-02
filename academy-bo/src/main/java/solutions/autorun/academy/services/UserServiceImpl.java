@@ -41,14 +41,7 @@ import java.util.Set;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Value("${solutions.autorun.academy.minio.endpoint}")
-    String minioEndpoint;
-    @Value("${solutions.autorun.academy.minio.accessKey}")
-    String minioAccessKey;
-    @Value("${solutions.autorun.academy.minio.secretKey}")
-    String minioSecretKey;
-    @Value("${solutions.autorun.academy.minio.bucket}")
-    String minioBucket;
+
 
     private final AppRoleRepository appRoleRepository;
     private final UserRepository userRepository;
@@ -195,116 +188,13 @@ public class UserServiceImpl implements UserService {
                 .fetch());
     }
 
-    @Override
-    public Invoice addInvoice(MultipartFile file, String fileName, Long userId) {
-        try {
-            MinioClient minioClient = new MinioClient(minioEndpoint, minioAccessKey,
-                    minioSecretKey);
-            boolean found = minioClient.bucketExists(minioBucket);
-            if (found) {
-                System.out.println(minioBucket + " already exists");
-            } else {
-                minioClient.makeBucket(minioBucket);
-                System.out.println(minioBucket + " is created successfully");
-            }
-            byte[] byteArr = file.getBytes();
-            InputStream bais = new ByteArrayInputStream(byteArr);
-            minioClient.putObject(minioBucket, fileName, bais, bais.available(), "application/octet-stream");
-            bais.close();
-            System.out.println(fileName + " is uploaded successfully");
-            Invoice invoice = new Invoice();
-            invoice.setUser(userRepository.findById(userId).get());
-            invoice.setFileName(fileName);
-            invoice.setLifeCycleStatus("uploaded");
-            invoiceRepository.save(invoice);
-            return invoice;
 
-        } catch (
-                MinioException e) {
-            System.out.println("Error occurred: " + e);
-            return null;
-        } catch (
-                IOException e) {
-            System.out.println("Error occurred: " + e);
-            return null;
-        } catch (
-                NoSuchAlgorithmException e) {
-            System.out.println("Error occurred: " + e);
-            return null;
-        } catch (
-                InvalidKeyException e) {
-            System.out.println("Error occurred: " + e);
-            return null;
-        } catch (
-                XmlPullParserException e) {
-            System.out.println("Error occurred: " + e);
-            return null;
-        }
-    }
 
-    @Override
-    public Invoice insertValuesToInvoice(String invoiceString) {
-      Gson gson = new GsonBuilder()//
-                .disableHtmlEscaping()//
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES) //
-                .setPrettyPrinting()//
-                .serializeNulls()//
-                .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
-                .create();
 
-      Invoice invoiceInput = gson.fromJson(invoiceString, Invoice.class);
 
-        Invoice invoice = invoiceRepository.findById(invoiceInput.getId()).orElseThrow(() -> new NotFoundException("Invoice not found"));
-        invoice.setAmount(invoiceInput.getAmount());
-        invoice.setCurrency(invoiceInput.getCurrency());
-        invoice.setHours(invoiceInput.getHours());
-        invoice.setVat(invoiceInput.getVat());
-        invoice.setDate(invoiceInput.getDate());
-        invoice.setPayday(invoiceInput.getPayday());
-        invoice.setLifeCycleStatus("parsed");
-        invoiceRepository.save(invoice);
-        return invoice;
-    }
 
-    @Override
-    public Invoice attachTasksToInvoice(Long invoiceId, String tasksString){
-        Gson gson = new GsonBuilder()//
-                .disableHtmlEscaping()//
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES) //
-                .setPrettyPrinting()//
-                .serializeNulls()//
-                .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
-                .create();
-        //Type founderSetType = new TypeToken<HashSet<Task>>(){}.getType();
-        //Set<Task> tasksInput = gson.fromJson(tasksString, founderSetType);
-        Task tasksInput = gson.fromJson(tasksString, Task.class);
-        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
-        invoice.getTasks().add(tasksInput);
-        //invoice.setTasks(invoice.getTasks().add(tasksInput));
-        invoice.setLifeCycleStatus("paired_with_tasks");
-        invoiceRepository.save(invoice);
-        return invoice;
-    }
 
-    @Override
-    public Invoice detachTasksFromInvoice(Long invoiceId, String tasksString){
-        Gson gson = new GsonBuilder()//
-                .disableHtmlEscaping()//
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES) //
-                .setPrettyPrinting()//
-                .serializeNulls()//
-                .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
-                .create();
-        //Type founderSetType = new TypeToken<HashSet<Task>>(){}.getType();
-        //Set<Task> tasksInput = gson.fromJson(tasksString, founderSetType);
-        Task tasksInput = gson.fromJson(tasksString, Task.class);
-        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
-        invoice.getTasks().removeIf(task -> task.getNumber().equals(tasksInput.getNumber()));
-        //invoice.setTasks(invoice.getTasks().add(tasksInput));
-        invoice.setLifeCycleStatus("paired_with_tasks");
-        invoiceRepository.save(invoice);
-        return invoice;
-    }
+
 
     @Override
     public Set<Task> tempGetTasksFromProject(){
@@ -313,13 +203,6 @@ public class UserServiceImpl implements UserService {
         return new HashSet<> (query.from(qtask).where(qtask.id.between(4,8)).fetch());
     }
 
-    @Override
-    public Invoice sendForApproval(Long invoiceId){
 
-        Invoice invoice = invoiceRepository.findById(invoiceId).get();
-        invoice.setLifeCycleStatus("Sent_for_approval");
-        invoiceRepository.save(invoice);
-        return invoice;
-    }
 
 }

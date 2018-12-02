@@ -1,7 +1,9 @@
 package solutions.autorun.academy.services;
 
+import org.springframework.web.multipart.MultipartFile;
 import solutions.autorun.academy.model.Invoice;
 
+import java.io.InputStream;
 import java.util.Set;
 
 public interface InvoiceService {
@@ -14,4 +16,16 @@ public interface InvoiceService {
     void updateInvoice(Invoice invoice);
 
     void deleteInvoice(Long id);
+
+    Invoice insertValuesToInvoice(String invoiceString);
+
+    Invoice attachTasksToInvoice (Long invoiceId, String tasks);
+
+    Invoice detachTasksFromInvoice (Long invoiceId, String tasks);
+
+    Invoice addInvoice(MultipartFile file, String fileName, Long userId);
+
+    Invoice sendForApproval(Long invoiceId);
+
+    InputStream getInvoiceFile(String fileName);
 }

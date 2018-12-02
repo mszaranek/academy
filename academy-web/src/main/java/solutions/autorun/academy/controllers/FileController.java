@@ -8,7 +8,7 @@
 //import org.springframework.http.ResponseEntity;
 //import org.springframework.web.bind.annotation.*;
 //import org.springframework.web.multipart.MultipartFile;
-//import solutions.autorun.academy.services.FileService;
+//import solutions.autorun.academy.services.FileManager;
 //
 //import javax.servlet.http.HttpServletResponse;
 //import java.io.IOException;
@@ -18,7 +18,7 @@
 //@RequestMapping
 //public class FileController {
 //
-//    private final FileService fileService;
+//    private final FileManager fileService;
 //
 //    @PostMapping(value = "/files/add/{fileName}")
 //    public ResponseEntity<String> addFile(@RequestParam(value = "file") MultipartFile file, @PathVariable String fileName){

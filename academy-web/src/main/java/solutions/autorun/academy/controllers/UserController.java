@@ -2,16 +2,23 @@ package solutions.autorun.academy.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.google.api.client.json.JsonString;
+import com.google.api.client.util.IOUtils;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import solutions.autorun.academy.Account.OnRegistrationCompleteEvent;
+import solutions.autorun.academy.exceptions.FileManagerException;
 import solutions.autorun.academy.model.*;
+import solutions.autorun.academy.services.InvoiceService;
 import solutions.autorun.academy.services.UserService;
 import solutions.autorun.academy.views.Views;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +29,9 @@ import solutions.autorun.academy.model.User;
 import solutions.autorun.academy.services.UserService;
 import solutions.autorun.academy.views.Views;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.lang.System;
 import java.util.Locale;
 import java.util.Set;
@@ -32,17 +41,19 @@ import java.util.Set;
 @RequestMapping
 public class UserController {
 
+    private final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private final InvoiceService invoiceService;
     private MessageSource messages;
     ApplicationEventPublisher eventPublisher;
 
     @JsonView(Views.UserView.class)
     @GetMapping(value = "/users")
     public ResponseEntity<Set<User>> showUsers() {
-        long startTime = System.currentTimeMillis();
+        //long startTime = System.currentTimeMillis();
         Set<User> users = userService.getUsers();
-        long estimatedTime = (System.currentTimeMillis() - startTime) / 1000;
-        System.out.println("Time: " + estimatedTime);
+       // long estimatedTime = (System.currentTimeMillis() - startTime) / 1000;
+      //  System.out.println("Time: " + estimatedTime);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -53,7 +64,7 @@ public class UserController {
             String appUrl = request.getContextPath();
             eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            log.debug(e.getMessage());
         }
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -139,7 +150,14 @@ public class UserController {
     @JsonView(Views.InvoiceCreationFirstStepView.class)
     //@JsonView(Views.InvoiceView.class)
     public ResponseEntity<Invoice> addUsersInvoice(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file, @RequestParam(value = "name") String fileName) {
-        return new ResponseEntity<>(userService.addInvoice(file,fileName,id), HttpStatus.CREATED);
+        try {
+            return new ResponseEntity<>(invoiceService.addInvoice(file, fileName, id), HttpStatus.CREATED);
+        }
+        catch(FileManagerException e){
+            HttpHeaders headers =  new HttpHeaders();
+            headers.add("FileManagerException:", e.getMessage());
+            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping(value = "users/{id}/invoices/add/2")
@@ -148,7 +166,7 @@ public class UserController {
     @JsonView(Views.InvoiceCreationSecondStepView.class)
     //@JsonView(Views.InvoiceView.class)
     public ResponseEntity<Invoice> addUsersInvoiceStepTwo(@PathVariable Long id, @RequestBody String invoice) {
-        return new ResponseEntity<>(userService.insertValuesToInvoice(invoice), HttpStatus.OK);
+        return new ResponseEntity<>(invoiceService.insertValuesToInvoice(invoice), HttpStatus.OK);
     }
 
     @GetMapping(value = "users/{id}/invoices/add/gettasks")
@@ -166,7 +184,7 @@ public class UserController {
     @JsonView(Views.InvoiceCreationThirdStepView.class)
     //@JsonView(Views.InvoiceView.class)
     public ResponseEntity<Invoice> attachTasksToInvoice(@PathVariable Long id, @RequestParam(value="invoiceId") Long invoiceId, @RequestBody String tasks) {
-        return new ResponseEntity<>(userService.attachTasksToInvoice(invoiceId,tasks), HttpStatus.OK);
+        return new ResponseEntity<>(invoiceService.attachTasksToInvoice(invoiceId,tasks), HttpStatus.OK);
     }
 
     @PostMapping(value = "users/{id}/invoices/add/removetask")
@@ -175,7 +193,7 @@ public class UserController {
     @JsonView(Views.InvoiceCreationThirdStepView.class)
     //@JsonView(Views.InvoiceView.class)
     public ResponseEntity<Invoice> detachTasksFromInvoice(@PathVariable Long id, @RequestParam(value="invoiceId") Long invoiceId, @RequestBody String tasks) {
-        return new ResponseEntity<>(userService.detachTasksFromInvoice(invoiceId,tasks), HttpStatus.OK);
+        return new ResponseEntity<>(invoiceService.detachTasksFromInvoice(invoiceId,tasks), HttpStatus.OK);
     }
 
     @GetMapping(value = "users/{id}/invoices/add/4")
@@ -184,6 +202,32 @@ public class UserController {
     @JsonView(Views.InvoiceCreationThirdStepView.class)
     //@JsonView(Views.InvoiceView.class)
     public ResponseEntity<Invoice> sendInvoiceForApproval(@PathVariable Long id, @RequestParam(value="invoiceId") Long invoiceId) {
-        return new ResponseEntity<>(userService.sendForApproval(invoiceId), HttpStatus.OK);
+        return new ResponseEntity<>(invoiceService.sendForApproval(invoiceId), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "users/{id}/invoices/getfile", produces = MediaType.APPLICATION_PDF_VALUE)
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @Transactional
+    @JsonView(Views.InvoiceCreationThirdStepView.class)
+    //@JsonView(Views.InvoiceView.class)
+    public ResponseEntity<Void> getInvoiceFile(@PathVariable Long id,@RequestParam(value="fileName") String fileName, HttpServletResponse response) {
+        try {
+            IOUtils.copy(invoiceService.getInvoiceFile(fileName), response.getOutputStream());
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.flushBuffer();
+            return new ResponseEntity<>( HttpStatus.OK);
+        }
+        catch(IOException e){
+            HttpHeaders headers =  new HttpHeaders();
+            headers.add("IOException:", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        catch(FileManagerException e){
+            HttpHeaders headers =  new HttpHeaders();
+            headers.add("FileManagerException:", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

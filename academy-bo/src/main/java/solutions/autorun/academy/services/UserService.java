@@ -33,19 +33,13 @@ public interface UserService {
     VerificationToken getVerificationToken(String VerificationToken);
 
 
-    Invoice insertValuesToInvoice(String invoiceString);
 
-    Invoice attachTasksToInvoice (Long invoiceId, String tasks);
-
-    Invoice detachTasksFromInvoice (Long invoiceId, String tasks);
 
     Set<Task> tempGetTasksFromProject();
 
 
     void saveRegisteredUser(User user);
 
-    Invoice addInvoice(MultipartFile file, String fileName, Long userId);
 
-    Invoice sendForApproval(Long invoiceId);
 
 }

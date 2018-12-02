@@ -275,10 +275,32 @@ public class UserServiceImpl implements UserService {
                 .serializeNulls()//
                 .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
                 .create();
-        Type founderSetType = new TypeToken<HashSet<Task>>(){}.getType();
-        Set<Task> tasksInput = gson.fromJson(tasksString, founderSetType);
+        //Type founderSetType = new TypeToken<HashSet<Task>>(){}.getType();
+        //Set<Task> tasksInput = gson.fromJson(tasksString, founderSetType);
+        Task tasksInput = gson.fromJson(tasksString, Task.class);
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
-        invoice.setTasks(tasksInput);
+        invoice.getTasks().add(tasksInput);
+        //invoice.setTasks(invoice.getTasks().add(tasksInput));
+        invoice.setLifeCycleStatus("paired_with_tasks");
+        invoiceRepository.save(invoice);
+        return invoice;
+    }
+
+    @Override
+    public Invoice detachTasksFromInvoice(Long invoiceId, String tasksString){
+        Gson gson = new GsonBuilder()//
+                .disableHtmlEscaping()//
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES) //
+                .setPrettyPrinting()//
+                .serializeNulls()//
+                .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
+                .create();
+        //Type founderSetType = new TypeToken<HashSet<Task>>(){}.getType();
+        //Set<Task> tasksInput = gson.fromJson(tasksString, founderSetType);
+        Task tasksInput = gson.fromJson(tasksString, Task.class);
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
+        invoice.getTasks().removeIf(task -> task.getNumber().equals(tasksInput.getNumber()));
+        //invoice.setTasks(invoice.getTasks().add(tasksInput));
         invoice.setLifeCycleStatus("paired_with_tasks");
         invoiceRepository.save(invoice);
         return invoice;

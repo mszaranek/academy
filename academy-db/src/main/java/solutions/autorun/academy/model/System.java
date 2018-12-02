@@ -14,16 +14,17 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(exclude = {"projects","tasks"})
 @Entity
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "name")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 public class System {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonView(Views.UsersTaskView.class)
+    @JsonView({Views.UsersTaskView.class, Views.InvoiceCreationThirdStepView.class})
     private String name;
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "system")
+
     private Set<Task> tasks = new HashSet<>();
     @ManyToMany
     @JoinTable(name = "project_system", joinColumns = @JoinColumn(name = "project_id"),

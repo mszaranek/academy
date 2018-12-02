@@ -15,9 +15,9 @@ import java.util.Date;
 @EqualsAndHashCode(exclude = {"system","user","sprint"})
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "number")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "number")
 @NamedEntityGraph(name="taskEntityGraph", attributeNodes={
         @NamedAttributeNode("user"),
         @NamedAttributeNode("sprint"),
@@ -44,8 +44,8 @@ public class Task {
     private String type;
     @ManyToOne
     private Sprint sprint;
-    @ManyToOne
-    @JsonView(Views.UsersTaskView.class)
+    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.REMOVE})
+    @JsonView({Views.UsersTaskView.class, Views.InvoiceCreationThirdStepView.class})
     private System system;
 
 }

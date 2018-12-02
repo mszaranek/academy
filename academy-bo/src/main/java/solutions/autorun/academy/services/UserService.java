@@ -37,6 +37,8 @@ public interface UserService {
 
     Invoice attachTasksToInvoice (Long invoiceId, String tasks);
 
+    Invoice detachTasksFromInvoice (Long invoiceId, String tasks);
+
     Set<Task> tempGetTasksFromProject();
 
 

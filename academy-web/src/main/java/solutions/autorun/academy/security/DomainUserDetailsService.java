@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import solutions.autorun.academy.model.User;
 import solutions.autorun.academy.repositories.UserRepository;
+import solutions.autorun.academy.security.exceptions.UserNotActivatedException;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Component("userDetailsService")

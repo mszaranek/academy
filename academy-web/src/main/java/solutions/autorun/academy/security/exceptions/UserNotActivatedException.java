@@ -1,4 +1,4 @@
-package solutions.autorun.academy.security;
+package solutions.autorun.academy.security.exceptions;
 
 import org.springframework.security.core.AuthenticationException;
 

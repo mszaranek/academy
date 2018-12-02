@@ -14,7 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import solutions.autorun.academy.security.CustomUser;
-import solutions.autorun.academy.security.UserNotActivatedException;
+import solutions.autorun.academy.security.exceptions.UserNotActivatedException;
 
 import javax.annotation.PostConstruct;
 import java.security.Key;

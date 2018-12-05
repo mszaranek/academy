@@ -24,7 +24,7 @@ import java.util.Set;
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.InvoiceCreationFirstStepView.class)
+    @JsonView({Views.InvoiceView.class,Views.InvoiceCreationFirstStepView.class})
     private Long id;
     @JsonView({Views.UserView.class, Views.InvoiceView.class})
     private Double amount;
@@ -58,7 +58,7 @@ public class Invoice {
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     private Set<Task> tasks;
 
-    //@JsonView({Views.UserView.class,Views.InvoiceView.class})
+    @JsonView({Views.UserView.class,Views.InvoiceView.class, Views.InvoiceCreationFirstStepView.class})
     private String fileName;
     @ManyToMany
     @JoinTable(name = "project_invoice", joinColumns = @JoinColumn(name = "invoice_id"),

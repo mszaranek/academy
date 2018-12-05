@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import solutions.autorun.academy.views.Views;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@Audited
 @Builder
 @EqualsAndHashCode(exclude = {"system","user","sprint"})
 @NoArgsConstructor
@@ -28,9 +31,12 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
-    private Integer number;
+    private String number;
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    private String summary;
     @ManyToOne
     @JsonView(Views.ProjectsTaskView.class)
+    @NotAudited
     private User user;
     @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private Integer estimate;
@@ -43,9 +49,11 @@ public class Task {
     @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private String type;
     @ManyToOne
+    @NotAudited
     private Sprint sprint;
     @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.REMOVE})
     @JsonView({Views.UsersTaskView.class, Views.InvoiceCreationThirdStepView.class})
+    @NotAudited
     private System system;
 
 }

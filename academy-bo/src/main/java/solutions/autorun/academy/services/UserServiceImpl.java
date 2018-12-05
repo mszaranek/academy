@@ -27,6 +27,7 @@ import solutions.autorun.academy.repositories.UserRepository;
 import solutions.autorun.academy.repositories.VerificationTokenRepository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,7 +89,7 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());
-        user.setActivated(false);
+        user.setActivated(true);
         Set<AppRole> defaultRoles = new HashSet<>();
         defaultRoles.add(appRoleRepository.findById(2l).get());
         user.setAppRoles(defaultRoles);
@@ -200,7 +201,7 @@ public class UserServiceImpl implements UserService {
     public Set<Task> tempGetTasksFromProject(){
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QTask qtask = QTask.task;
-        return new HashSet<> (query.from(qtask).where(qtask.id.between(4,8)).fetch());
+        return new HashSet<> (query.from(qtask).where(qtask.id.loe(30)).fetch());
     }
 
 

@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import solutions.autorun.academy.exceptions.FileManagerException;
 
 
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 
 @ControllerAdvice
@@ -33,6 +34,13 @@ public class RestResponseEntityExceptionHandler
 
     @ExceptionHandler({ FileManagerException.class })
     public ResponseEntity<Object> fileManagerException(
+            Exception ex, WebRequest request) {
+        return new ResponseEntity<>(
+                ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({ IOException.class })
+    public ResponseEntity<Object> IOException(
             Exception ex, WebRequest request) {
         return new ResponseEntity<>(
                 ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);

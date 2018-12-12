@@ -3,23 +3,18 @@ package solutions.autorun.academy.services;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.minio.MinioClient;
-import io.minio.errors.MinioException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.xmlpull.v1.XmlPullParserException;
 import solutions.autorun.academy.exceptions.NotFoundException;
+import solutions.autorun.academy.model.BillingDetails;
 import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.model.Task;
 import solutions.autorun.academy.repositories.InvoiceRepository;
 import solutions.autorun.academy.repositories.UserRepository;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import javax.persistence.EntityManager;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -98,7 +93,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public Invoice attachTasksToInvoice(Long invoiceId, String tasksString){
+    public Invoice attachTasksToInvoice(Long invoiceId, String tasksString, Long userId){
         Gson gson = new GsonBuilder()//
                 .disableHtmlEscaping()//
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES) //
@@ -106,32 +101,29 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .serializeNulls()//
                 .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
                 .create();
-        //Type founderSetType = new TypeToken<HashSet<Task>>(){}.getType();
-        //Set<Task> tasksInput = gson.fromJson(tasksString, founderSetType);
         Task tasksInput = gson.fromJson(tasksString, Task.class);
+        tasksInput.setUser(userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User Not Found")));
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
         invoice.getTasks().add(tasksInput);
-        //invoice.setTasks(invoice.getTasks().add(tasksInput));
         invoice.setLifeCycleStatus("paired_with_tasks");
         invoiceRepository.save(invoice);
         return invoice;
     }
 
     @Override
-    public Invoice detachTasksFromInvoice(Long invoiceId, String tasksString){
+    public Invoice detachTasksFromInvoice(Long invoiceId, String tasksString, Long userId){
         Gson gson = new GsonBuilder()//
                 .disableHtmlEscaping()//
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES) //
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .setPrettyPrinting()//
                 .serializeNulls()//
                 .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
                 .create();
-        //Type founderSetType = new TypeToken<HashSet<Task>>(){}.getType();
-        //Set<Task> tasksInput = gson.fromJson(tasksString, founderSetType);
+
         Task tasksInput = gson.fromJson(tasksString, Task.class);
+        tasksInput.setUser(null);
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
         invoice.getTasks().removeIf(task -> task.getNumber().equals(tasksInput.getNumber()));
-        //invoice.setTasks(invoice.getTasks().add(tasksInput));
         invoice.setLifeCycleStatus("paired_with_tasks");
         invoiceRepository.save(invoice);
         return invoice;
@@ -149,5 +141,27 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public InputStream getInvoiceFile(String fileName){
         return fileManager.getFile(fileName);
+    }
+
+    @Override
+    public String extractBillingDetails(Long invoiceId){
+        Gson gson = new GsonBuilder()//
+                .disableHtmlEscaping()//
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES) //
+                .setPrettyPrinting()//
+                .serializeNulls()//
+                .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
+                .create();
+        BillingDetails billingDetails = new BillingDetails();
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()->new NotFoundException("Invoice not found"));
+        Set<Task> tasks = invoice.getTasks();
+        billingDetails.setTotalEstimatedHours(tasks.stream().mapToLong(Task::getEstimate).sum());
+        billingDetails.setInvoiceEstimationDifference(billingDetails.getTotalEstimatedHours() - invoice.getHours());
+        billingDetails.setBugEstimatedHours(tasks.stream().filter(task -> task.getStatus().toLowerCase().equals("bug")).mapToLong(Task::getEstimate).sum());
+        billingDetails.setDoneEstimatedHours(tasks.stream().filter(task -> task.getStatus().toLowerCase().equals("done")).mapToLong(Task::getEstimate).sum());
+        billingDetails.setBugPercentage((billingDetails.getBugEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
+        billingDetails.setBugPercentage((billingDetails.getDoneEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
+
+        return gson.toJson(billingDetails);
     }
 }

@@ -4,21 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.exception.RevisionDoesNotExistException;
-import org.hibernate.envers.query.AuditEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import solutions.autorun.academy.model.Task;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Locale;
 
 @RequiredArgsConstructor
 @Service
@@ -30,7 +26,7 @@ public class SyncServiceImpl implements SyncService {
 
     @Override
     @Transactional
-    @Scheduled(fixedDelay = 36000L)
+    @Scheduled(fixedDelay = 3600000L)
     public void sync() throws IOException{
 
         AuditReader reader = AuditReaderFactory.get(entityManager);

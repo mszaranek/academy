@@ -18,12 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
    @EntityGraph(value="userEntityGraph")
     Optional<User> findById(Long aLong);
 
-    //Optional<User> findOneByActivationKey(String activationKey);
-
-    //List<User> findAllByActivatedIsFalseAndCreatedDateBefore(Instant dateTime);
-
-    //Optional<User> findOneByResetKey(String resetKey);
-
     Optional<User> findOneByEmailIgnoreCase(String email);
 
     Optional<User> findOneByUsername(String username);

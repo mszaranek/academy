@@ -1,13 +1,10 @@
 package solutions.autorun.academy.services;
 
 
-import com.google.api.client.json.JsonString;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import solutions.autorun.academy.model.*;
 
-import org.springframework.web.multipart.MultipartFile;
-import solutions.autorun.academy.model.Invoice;
-import solutions.autorun.academy.model.Task;
-import solutions.autorun.academy.model.User;
 import java.util.Set;
 
 public interface UserService {
@@ -35,7 +32,7 @@ public interface UserService {
 
 
 
-    Set<Task> tempGetTasksFromProject();
+    Page<Task> tempGetTasksFromProject(Pageable pageable);
 
 
     void saveRegisteredUser(User user);

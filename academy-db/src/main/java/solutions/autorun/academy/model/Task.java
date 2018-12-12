@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import solutions.autorun.academy.views.Views;
@@ -45,6 +46,9 @@ public class Task {
     @JsonView(Views.UsersTaskView.class)
     private Date finishDate;
     @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    private String dueDate;
+
+    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private String status;
     @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private String type;
@@ -55,5 +59,10 @@ public class Task {
     @JsonView({Views.UsersTaskView.class, Views.InvoiceCreationThirdStepView.class})
     @NotAudited
     private System system;
+
+    @Formula("regexp_replace(number,'[^0-9]+','') ::integer")
+    @NotAudited
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    private Long unsigned;
 
 }

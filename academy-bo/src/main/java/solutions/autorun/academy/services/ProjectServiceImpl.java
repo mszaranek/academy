@@ -53,32 +53,8 @@ public class ProjectServiceImpl implements ProjectService {
         QSystem qSystem = QSystem.system;
         QTask qTask = QTask.task;
 
-//        HashSet<Tuple> tuples = new HashSet<>(query
-//                .from(qTask)
-//                .select(qTask.id, qTask.number, qTask.user.id, qTask.estimate, qTask.status, qTask.type)
-//                .join(qTask.system, qSystem)
-//                .on(qTask.system.id.eq(qSystem.id))
-//                .join(qSystem.projects, qProject)
-//                .on(qSystem.projects.any().id.eq(qProject.id))
-//                .where(qProject.id.eq(id))
-//                .fetch());
-//
-//        Set<Task> tasks = new HashSet<>();
-//        for (Tuple t : tuples) {
-//            tasks.add(Task.builder()
-//                    .id(t.get(qTask.id))
-//                    .number(t.get(qTask.number))
-//                    .user.builder().id(t.get(qTask.id))
-//                    .estimate(t.get(qTask.estimate))
-//                    .status(t.get(qTask.status))
-//                    .type(t.get(qTask.type))
-//                    .build());
-//        }
-//        return tasks;
-
         return new HashSet<>(query
                 .from(qTask)
-//                .select(qTask.id, qTask.number, qTask.user.id, qTask.estimate, qTask.status, qTask.type)
                 .join(qTask.system, qSystem)
                 .on(qTask.system.id.eq(qSystem.id))
                 .join(qSystem.projects, qProject)

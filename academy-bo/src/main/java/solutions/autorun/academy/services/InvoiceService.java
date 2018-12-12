@@ -19,13 +19,15 @@ public interface InvoiceService {
 
     Invoice insertValuesToInvoice(String invoiceString);
 
-    Invoice attachTasksToInvoice (Long invoiceId, String tasks);
+    Invoice attachTasksToInvoice (Long invoiceId, String tasks, Long userId);
 
-    Invoice detachTasksFromInvoice (Long invoiceId, String tasks);
+    Invoice detachTasksFromInvoice (Long invoiceId, String tasks, Long userId);
 
     Invoice addInvoice(MultipartFile file, String fileName, Long userId);
 
     Invoice sendForApproval(Long invoiceId);
 
     InputStream getInvoiceFile(String fileName);
+
+    String extractBillingDetails(Long invoiceId);
 }

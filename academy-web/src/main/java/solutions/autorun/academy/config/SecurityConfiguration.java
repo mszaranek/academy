@@ -74,17 +74,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-//    @Override
-//    public void configure(WebSecurity web) throws Exception {
-//        web.ignoring()
-//                .antMatchers(HttpMethod.OPTIONS, "/**")
-//                .antMatchers("/app/**/*.{js,html}")
-//                .antMatchers("/i18n/**")
-//                .antMatchers("/content/**")
-//                .antMatchers("/h2-console/**")
-//                .antMatchers("/swagger-ui.index.html")
-//                .antMatchers("/test/**");
-//    }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -93,8 +82,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .disable()
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
-                //.authenticationEntryPoint(problemSupport)
-                //.accessDeniedHandler(problemSupport)
                 .and()
                 .headers()
                 .frameOptions()
@@ -104,7 +91,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/swagger-ui.html").permitAll()
+                //.antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/authenticate").permitAll()
                 .antMatchers("/register").permitAll()
                 .antMatchers("/registrationConfirm").permitAll()

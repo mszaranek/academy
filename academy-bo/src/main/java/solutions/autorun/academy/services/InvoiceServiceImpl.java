@@ -101,8 +101,8 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .serializeNulls()//
                 .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
                 .create();
-        Task tasksInput = gson.fromJson(tasksString, Task.class);
-        tasksInput.setUser(userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User Not Found")));
+        Set<Task> tasksInput = gson.fromJson(tasksString, Task.class);
+        tasksInput.addUsers(userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User Not Found")));
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
         invoice.getTasks().add(tasksInput);
         invoice.setLifeCycleStatus("paired_with_tasks");
@@ -160,7 +160,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         billingDetails.setBugEstimatedHours(tasks.stream().filter(task -> task.getStatus().toLowerCase().equals("bug")).mapToLong(Task::getEstimate).sum());
         billingDetails.setDoneEstimatedHours(tasks.stream().filter(task -> task.getStatus().toLowerCase().equals("done")).mapToLong(Task::getEstimate).sum());
         billingDetails.setBugPercentage((billingDetails.getBugEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
-        billingDetails.setBugPercentage((billingDetails.getDoneEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
+        billingDetails.setDonePercentage((billingDetails.getDoneEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
 
         return gson.toJson(billingDetails);
     }

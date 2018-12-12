@@ -64,8 +64,8 @@ public class User {
     private Set<AppRole> appRoles = new HashSet<>();
 
     @JsonView(Views.UserView.class)
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user"/*, fetch = FetchType.EAGER*/)
-//    @JoinColumn(name="user_id")
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user", fetch = FetchType.EAGER)
+    @JoinColumn(name="user_id")
     private Set<Task> tasks = new HashSet<>();
 
     @JsonView(Views.UserView.class)

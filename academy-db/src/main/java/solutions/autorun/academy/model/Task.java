@@ -11,6 +11,8 @@ import solutions.autorun.academy.views.Views;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -35,10 +37,10 @@ public class Task {
     private String number;
     @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private String summary;
-    @ManyToOne
+    @ManyToMany(cascade = {CascadeType.MERGE}, mappedBy = "tasks")
     @JsonView(Views.ProjectsTaskView.class)
     @NotAudited
-    private User user;
+    private Set<User> users  = new HashSet<>();
     @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private Integer estimate;
     @JsonView(Views.UsersTaskView.class)
@@ -59,6 +61,15 @@ public class Task {
     @JsonView({Views.UsersTaskView.class, Views.InvoiceCreationThirdStepView.class})
     @NotAudited
     private System system;
+
+    @OneToMany
+    @NotAudited
+    private Set<UserEstimate> userEstimates = new HashSet<>();
+
+    @NotAudited
+    private String trelloId;
+
+
 
     @Formula("regexp_replace(number,'[^0-9]+','') ::integer")
     @NotAudited

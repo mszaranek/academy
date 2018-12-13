@@ -18,6 +18,7 @@ public class InvoiceController {
     private final InvoiceService invoiceService;
 
     @GetMapping
+    @JsonView(Views.InvoiceView.class)
     public ResponseEntity<Set<Invoice>> showInvoices() {
         long startTime = System.currentTimeMillis();
         Set<Invoice> invoices = invoiceService.getInvoices();

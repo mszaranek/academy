@@ -24,6 +24,8 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView({Views.InvoiceView.class,Views.InvoiceCreationFirstStepView.class})
     private Long id;
+    @JsonView({Views.InvoiceView.class, Views.InvoiceCreationSecondStepView.class})
+    private String number;
     @JsonView({Views.UserView.class, Views.InvoiceView.class})
     private Double amount;
     @ManyToOne
@@ -35,6 +37,7 @@ public class Invoice {
     @JsonView({Views.UserView.class,Views.InvoiceView.class})
     private String date;
     @JsonView({Views.UserView.class,Views.InvoiceView.class})
+    @Def
     private String validationStatus;
 
     @JsonView({Views.UserView.class,Views.InvoiceView.class, Views.InvoiceCreationFirstStepView.class})

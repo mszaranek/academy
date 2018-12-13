@@ -83,6 +83,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setHours(invoiceInput.getHours());
         invoice.setVat(invoiceInput.getVat());
         invoice.setDate(invoiceInput.getDate());
+        invoice.setNumber(invoiceInput.getNumber());
         invoice.setPayday(invoiceInput.getPayday());
         invoice.setLifeCycleStatus("parsed");
         invoiceRepository.save(invoice);

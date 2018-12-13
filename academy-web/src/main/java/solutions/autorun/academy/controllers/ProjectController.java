@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.model.Project;
@@ -30,6 +31,7 @@ public class ProjectController {
     }
 
     @PostMapping(value = "/projects")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<Void> createProject(@RequestBody Project project) {
         projectService.createProject(project);
         return new ResponseEntity<>(HttpStatus.CREATED);

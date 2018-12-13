@@ -15,5 +15,6 @@ public class BillingDetails {
     private Long bugEstimatedHours;
     private Long bugPercentage;
     private Long invoiceEstimationDifference;
+    private Long hoursReported;
 
 }

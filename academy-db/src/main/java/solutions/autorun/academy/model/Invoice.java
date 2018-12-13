@@ -1,9 +1,6 @@
 package solutions.autorun.academy.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import solutions.autorun.academy.views.Views;
 
@@ -15,12 +12,13 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(exclude = {"projects", "user"})
 @Entity
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

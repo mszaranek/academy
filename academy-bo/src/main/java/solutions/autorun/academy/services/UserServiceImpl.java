@@ -21,19 +21,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
-
-
 
     private final AppRoleRepository appRoleRepository;
     private final UserRepository userRepository;
     private final VerificationTokenRepository tokenRepository;
     private final EntityManager entityManager;
     private final PasswordEncoder passwordEncoder;
-
 
     @Override
     public Set<User> getUsers() {
@@ -106,7 +104,6 @@ public class UserServiceImpl implements UserService {
         QProject qProject = QProject.project;
         return new HashSet<>(query
                 .from(qInvoice)
-                //.select(qInvoice.id, qInvoice.amount, qInvoice.paid, qInvoice.date, qInvoice.validationStatus)
                 .join(qInvoice.projects, qProject)
                 .on(qInvoice.projects.any().id.eq(qProject.id))
                 .join(qInvoice.user, qUser)
@@ -117,7 +114,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @EntityGraph(value = "taskEntityGraph")
+  //  @EntityGraph(value = "taskEntityGraph")
     public Set<Task> getUsersTasksInProject(Long userId, Long projectId) {
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QProject qProject = QProject.project;
@@ -138,7 +135,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @EntityGraph(value = "taskEntityGraph")
+   // @EntityGraph(value = "taskEntityGraph")
     public Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId) {
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QProject qProject = QProject.project;
@@ -157,14 +154,6 @@ public class UserServiceImpl implements UserService {
                 .fetch());
     }
 
-
-
-
-
-
-
-
-
     @Override
     public Page<Task> tempGetTasksFromProject(Pageable pageable){
 
@@ -172,14 +161,11 @@ public class UserServiceImpl implements UserService {
         QTask qTask = QTask.task;
         List<Task> tasks = new ArrayList<>(query.from(qTask)
                 .orderBy(qTask.unsigned.asc()).fetch());
+        tasks = tasks.stream().filter(task -> task.getUser().equals(null)).collect(Collectors.toList());
         int start = (int) pageable.getOffset();
         int end =  (start + pageable.getPageSize()) > tasks.size() ? tasks.size() : (start + pageable.getPageSize());
         Page<Task> page = new PageImpl<>(tasks.subList(start,end), pageable, tasks.size());
 
         return page;
-
     }
-
-
-
 }

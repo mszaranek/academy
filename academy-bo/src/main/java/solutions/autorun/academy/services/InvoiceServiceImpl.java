@@ -64,8 +64,6 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setLifeCycleStatus("uploaded");
         invoiceRepository.save(invoice);
         return invoice;
-
-
     }
 
     @Override
@@ -79,7 +77,6 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .create();
 
         Invoice invoiceInput = gson.fromJson(invoiceString, Invoice.class);
-
         Invoice invoice = invoiceRepository.findById(invoiceInput.getId()).orElseThrow(() -> new NotFoundException("Invoice not found"));
         invoice.setAmount(invoiceInput.getAmount());
         invoice.setCurrency(invoiceInput.getCurrency());
@@ -155,13 +152,14 @@ public class InvoiceServiceImpl implements InvoiceService {
         BillingDetails billingDetails = new BillingDetails();
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()->new NotFoundException("Invoice not found"));
         Set<Task> tasks = invoice.getTasks();
+
         billingDetails.setTotalEstimatedHours(tasks.stream().mapToLong(Task::getEstimate).sum());
         billingDetails.setInvoiceEstimationDifference(billingDetails.getTotalEstimatedHours() - invoice.getHours());
-        billingDetails.setBugEstimatedHours(tasks.stream().filter(task -> task.getStatus().toLowerCase().equals("bug")).mapToLong(Task::getEstimate).sum());
-        billingDetails.setDoneEstimatedHours(tasks.stream().filter(task -> task.getStatus().toLowerCase().equals("done")).mapToLong(Task::getEstimate).sum());
+        billingDetails.setBugEstimatedHours(tasks.stream().filter(task -> task.getStatus().trim().toLowerCase().equals("bug")).mapToLong(Task::getEstimate).sum());
+        billingDetails.setDoneEstimatedHours(tasks.stream().filter(task -> task.getStatus().trim().toLowerCase().equals("done")).mapToLong(Task::getEstimate).sum());
         billingDetails.setBugPercentage((billingDetails.getBugEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
-        billingDetails.setBugPercentage((billingDetails.getDoneEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
-
+        billingDetails.setDonePercentage((billingDetails.getDoneEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
+        billingDetails.setHoursReported(invoice.getHours());
         return gson.toJson(billingDetails);
     }
 }

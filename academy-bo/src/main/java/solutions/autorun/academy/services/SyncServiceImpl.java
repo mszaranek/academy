@@ -46,8 +46,5 @@ public class SyncServiceImpl implements SyncService {
         log.info("Running " + command);
         Runtime run = Runtime.getRuntime();
         Process proc = run.exec(command);
-
-
-
     }
 }

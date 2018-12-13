@@ -1,6 +1,7 @@
 package solutions.autorun.academy.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
@@ -27,36 +28,37 @@ import java.util.Date;
         @NamedAttributeNode("sprint"),
         @NamedAttributeNode("system")
 })
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
     private String number;
-    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
     private String summary;
     @ManyToOne
     @JsonView(Views.ProjectsTaskView.class)
     @NotAudited
     private User user;
-    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
     private Integer estimate;
     @JsonView(Views.UsersTaskView.class)
     private Date startDate;
     @JsonView(Views.UsersTaskView.class)
     private Date finishDate;
-    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
     private String dueDate;
 
-    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
     private String status;
-    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
     private String type;
     @ManyToOne
     @NotAudited
     private Sprint sprint;
     @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.REMOVE})
-    @JsonView({Views.UsersTaskView.class, Views.InvoiceCreationThirdStepView.class})
+    @JsonView({Views.UsersTaskView.class, Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
     @NotAudited
     private System system;
 

@@ -28,12 +28,16 @@ public class Project {
 
     @ManyToMany(cascade = {CascadeType.MERGE}, mappedBy = "projects")
     //@JsonManagedReference(value = "project_users")
+    @JsonIgnore
     private Set<User> users = new HashSet<>();
     @ManyToMany(cascade = {CascadeType.MERGE}, mappedBy = "projects")
+    @JsonIgnore
     private Set<System> systems = new HashSet<>();
     @ManyToMany(cascade = {CascadeType.MERGE}, mappedBy = "projects")
+    @JsonIgnore
     private Set<Invoice> invoices = new HashSet<>();
     @ManyToMany(cascade = {CascadeType.MERGE}, mappedBy = "projects")
+    @JsonIgnore
     private Set<ProjRole> projRoles = new HashSet<>();
 
     public Project() {

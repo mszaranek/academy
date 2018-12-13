@@ -177,6 +177,7 @@ public class UserController {
 
     @GetMapping(value = "users/{id}/invoices/add/gettasks")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @JsonView(Views.InvoiceCreationThirdStepView.class)
     public ResponseEntity<Page<Task>> getTasksFromProject(@PathVariable Long id, @PageableDefault(sort="number") Pageable pageable) {
         return new ResponseEntity<>((userService.tempGetTasksFromProject(pageable)), HttpStatus.OK);
     }
@@ -199,7 +200,6 @@ public class UserController {
 
     @GetMapping(value = "users/{id}/invoices/add/4")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
-    @Transactional
     @JsonView(Views.InvoiceCreationThirdStepView.class)
     public ResponseEntity<Invoice> sendInvoiceForApproval(@PathVariable Long id, @RequestParam(value="invoiceId") Long invoiceId) {
         return new ResponseEntity<>(invoiceService.sendForApproval(invoiceId), HttpStatus.OK);
@@ -207,7 +207,6 @@ public class UserController {
 
     @GetMapping(value = "users/{id}/invoices/getfile", produces = MediaType.APPLICATION_PDF_VALUE)
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
-    @Transactional
     @JsonView(Views.InvoiceCreationThirdStepView.class)
     public ResponseEntity<Void> getInvoiceFile(@PathVariable Long id,@RequestParam(value="fileName") String fileName, HttpServletResponse response) {
         try {
@@ -232,14 +231,14 @@ public class UserController {
 
     @GetMapping(value = "users/{id}/invoices/tasks/estimation")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
-
+    @Transactional
+    @JsonView(Views.TaskView.class)
     public ResponseEntity<Page<Task>> getTasksForEstimation(@PathVariable Long id, @PageableDefault(sort="number") Pageable pageable) {
-        return new ResponseEntity<>((taskService.getTasksForEstimation(id, pageable)), HttpStatus.OK);
+        return new ResponseEntity<>(userService.tempGetTasksFromProject(pageable), HttpStatus.OK);
     }
 
     @GetMapping(value = "users/{id}/invoices/billdetails")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
-
     public ResponseEntity<String> extractBillingDetails(@PathVariable Long id, @RequestParam(value="invoiceId") Long invoiceId) {
         return new ResponseEntity<>(invoiceService.extractBillingDetails(invoiceId), HttpStatus.OK);
     }

@@ -1,5 +1,6 @@
 package solutions.autorun.academy.services;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import solutions.autorun.academy.model.QTask;
 import solutions.autorun.academy.model.QUser;
 import solutions.autorun.academy.model.Task;
 import solutions.autorun.academy.repositories.TaskRepository;
+import solutions.autorun.academy.views.Views;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @JsonView(Views.TaskView.class)
     public Page<Task> getTasksForEstimation(Long userId, Pageable pageable){
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QTask qTask = QTask.task;

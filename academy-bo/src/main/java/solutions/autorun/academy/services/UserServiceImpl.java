@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
         QTask qTask = QTask.task;
         List<Task> tasks = new ArrayList<>(query.from(qTask)
                 .orderBy(qTask.unsigned.asc()).fetch());
-        tasks = tasks.stream().filter(task -> task.getUser().equals(null)).collect(Collectors.toList());
+        tasks = tasks.stream().filter(task -> task.getUser()==(null)).collect(Collectors.toList());
         int start = (int) pageable.getOffset();
         int end =  (start + pageable.getPageSize()) > tasks.size() ? tasks.size() : (start + pageable.getPageSize());
         Page<Task> page = new PageImpl<>(tasks.subList(start,end), pageable, tasks.size());

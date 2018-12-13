@@ -153,12 +153,21 @@ public class InvoiceServiceImpl implements InvoiceService {
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()->new NotFoundException("Invoice not found"));
         Set<Task> tasks = invoice.getTasks();
 
-        billingDetails.setTotalEstimatedHours(tasks.stream().mapToLong(Task::getEstimate).sum());
-        billingDetails.setInvoiceEstimationDifference(billingDetails.getTotalEstimatedHours() - invoice.getHours());
-        billingDetails.setBugEstimatedHours(tasks.stream().filter(task -> task.getStatus().trim().toLowerCase().equals("bug")).mapToLong(Task::getEstimate).sum());
-        billingDetails.setDoneEstimatedHours(tasks.stream().filter(task -> task.getStatus().trim().toLowerCase().equals("done")).mapToLong(Task::getEstimate).sum());
-        billingDetails.setBugPercentage((billingDetails.getBugEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
-        billingDetails.setDonePercentage((billingDetails.getDoneEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
+        Long totalEstimatedHours = tasks.stream().mapToLong(Task::getEstimate).sum();
+        Long invoiceEstimationDifference = totalEstimatedHours - invoice.getHours();
+        Long bugEstimatedHours = tasks.stream().filter(task -> task.getStatus().trim().toLowerCase().equals("bug")).mapToLong(Task::getEstimate).sum();
+        Long doneEstimatedHours = tasks.stream().filter(task -> task.getStatus().trim().toLowerCase().equals("done")).mapToLong(Task::getEstimate).sum();
+        Long bugPercentage = (bugEstimatedHours*100)/totalEstimatedHours;
+        Long donePercentage = (doneEstimatedHours*100)/totalEstimatedHours;
+
+
+
+        billingDetails.setTotalEstimatedHours(totalEstimatedHours);
+        billingDetails.setInvoiceEstimationDifference(invoiceEstimationDifference);
+        billingDetails.setBugEstimatedHours(bugEstimatedHours);
+        billingDetails.setDoneEstimatedHours(doneEstimatedHours);
+        billingDetails.setBugPercentage(bugPercentage);
+        billingDetails.setDonePercentage(donePercentage);
         billingDetails.setHoursReported(invoice.getHours());
         return gson.toJson(billingDetails);
     }

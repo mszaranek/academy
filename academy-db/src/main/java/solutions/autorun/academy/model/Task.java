@@ -1,9 +1,6 @@
 package solutions.autorun.academy.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import org.hibernate.annotations.Formula;
 import org.hibernate.envers.Audited;
@@ -33,21 +30,21 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
     private String number;
-    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
     private String summary;
     @ManyToOne
     @JsonView(Views.ProjectsTaskView.class)
     @NotAudited
     private User user;
-    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
+    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
     private Integer estimate;
     @JsonView(Views.UsersTaskView.class)
     private Date startDate;
     @JsonView(Views.UsersTaskView.class)
     private Date finishDate;
-    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
+    @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
     private String dueDate;
 
     @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
@@ -57,10 +54,14 @@ public class Task {
     @ManyToOne
     @NotAudited
     private Sprint sprint;
-    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.REMOVE})
-    @JsonView({Views.UsersTaskView.class, Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class})
+    @ManyToOne(cascade = {CascadeType.REMOVE})
+    @JsonView({Views.UsersTaskView.class, Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
     @NotAudited
+    @JsonIgnore
     private System system;
+
+    @NotAudited
+    private String trelloId;
 
     @Formula("regexp_replace(number,'[^0-9]+','') ::integer")
     @NotAudited

@@ -179,7 +179,7 @@ public class UserController {
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
     @JsonView(Views.InvoiceCreationThirdStepView.class)
     public ResponseEntity<Page<Task>> getTasksFromProject(@PathVariable Long id, @PageableDefault(sort="number") Pageable pageable) {
-        return new ResponseEntity<>((userService.tempGetTasksFromProject(pageable)), HttpStatus.OK);
+        return new ResponseEntity<>((userService.tempGetTasksFromProject(pageable, id)), HttpStatus.OK);
     }
 
     @PostMapping(value = "users/{id}/invoices/add/addtask")
@@ -234,7 +234,7 @@ public class UserController {
     @Transactional
     @JsonView(Views.TaskView.class)
     public ResponseEntity<Page<Task>> getTasksForEstimation(@PathVariable Long id, @PageableDefault(sort="number") Pageable pageable) {
-        return new ResponseEntity<>(userService.tempGetTasksFromProject(pageable), HttpStatus.OK);
+        return new ResponseEntity<>(userService.tempGetTasksFromProject(pageable, id), HttpStatus.OK);
     }
 
     @GetMapping(value = "users/{id}/invoices/billdetails")

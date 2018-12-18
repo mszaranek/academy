@@ -37,7 +37,6 @@ public class Invoice {
     @JsonView({Views.UserView.class,Views.InvoiceView.class})
     private String date;
     @JsonView({Views.UserView.class,Views.InvoiceView.class})
-    @Def
     private String validationStatus;
 
     @JsonView({Views.UserView.class,Views.InvoiceView.class, Views.InvoiceCreationFirstStepView.class})

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -128,8 +129,8 @@ public class UserServiceImpl implements UserService {
                 .on(qTask.system.id.eq(qSystem.id))
                 .join(qSystem.projects, qProject)
                 .on(qSystem.projects.any().id.eq(qSystem.id))
-                .join(qTask.user, qUser)
-                .on(qTask.user.id.eq(qUser.id))
+                .join(qTask.users, qUser)
+                .on(qTask.users.any().id.eq(qUser.id))
                 .where(qUser.id.eq(userId), qProject.id.eq(projectId))
                 .fetch());
     }
@@ -148,20 +149,22 @@ public class UserServiceImpl implements UserService {
                 .on(qTask.system.id.eq(qSystem.id))
                 .join(qSystem.projects, qProject)
                 .on(qSystem.projects.any().id.eq(qSystem.id))
-                .join(qTask.user, qUser)
-                .on(qTask.user.id.eq(qUser.id))
+                .join(qTask.users, qUser)
+                .on(qTask.users.any().id.eq(qUser.id))
                 .where(qUser.id.eq(userId), qProject.id.eq(projectId), qTask.id.eq(taskId))
                 .fetch());
     }
 
     @Override
-    public Page<Task> tempGetTasksFromProject(Pageable pageable){
+    public Page<Task> tempGetTasksFromProject(Pageable pageable, Long userId){
 
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QTask qTask = QTask.task;
         List<Task> tasks = new ArrayList<>(query.from(qTask)
-                .orderBy(qTask.unsigned.asc()).fetch());
-        tasks = tasks.stream().filter(task -> task.getUser()==(null)).collect(Collectors.toList());
+                .orderBy(qTask.textPart.asc(),qTask.unsigned.asc()).fetch());
+        Predicate<Task> con1 = task -> task.getUsers()==(null);
+        Predicate<Task> con2 = task -> task.getUsers().stream().anyMatch(user -> user.getId().equals(userId));
+        tasks = tasks.stream().filter(con1.or(con2)).collect(Collectors.toList());
         int start = (int) pageable.getOffset();
         int end =  (start + pageable.getPageSize()) > tasks.size() ? tasks.size() : (start + pageable.getPageSize());
         Page<Task> page = new PageImpl<>(tasks.subList(start,end), pageable, tasks.size());

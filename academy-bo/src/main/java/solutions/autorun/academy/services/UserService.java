@@ -29,7 +29,7 @@ public interface UserService {
 
     VerificationToken getVerificationToken(String VerificationToken);
 
-    Page<Task> tempGetTasksFromProject(Pageable pageable);
+    Page<Task> tempGetTasksFromProject(Pageable pageable, Long userId);
 
     void saveRegisteredUser(User user);
 

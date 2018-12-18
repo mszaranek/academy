@@ -38,9 +38,9 @@ public class TaskServiceImpl implements TaskService {
         QUser qUser = QUser.user;
         List<Task> tasks = new ArrayList<>(query
                 .from(qTask)
-                .join(qTask.user, qUser)
-                .on(qTask.user.id.eq(qUser.id))
-                .where(qTask.user.id.eq(userId))
+                .join(qTask.users, qUser)
+                .on(qTask.users.any().id.eq(qUser.id))
+                .where(qTask.users.any().id.eq(userId))
                 .fetch());
         int start = (int) pageable.getOffset();
         int end =  (start + pageable.getPageSize()) > tasks.size() ? tasks.size() : (start + pageable.getPageSize());

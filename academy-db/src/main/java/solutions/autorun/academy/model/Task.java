@@ -9,19 +9,20 @@ import solutions.autorun.academy.views.Views;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @Data
 @Entity
 @Audited
 @Builder
-@EqualsAndHashCode(exclude = {"system","user","sprint"})
+@EqualsAndHashCode(exclude = {"system","users","sprint"})
 @NoArgsConstructor
 @AllArgsConstructor
 //@JsonIdentityInfo(
 //        generator = ObjectIdGenerators.PropertyGenerator.class,
 //        property = "number")
 @NamedEntityGraph(name="taskEntityGraph", attributeNodes={
-        @NamedAttributeNode("user"),
+        @NamedAttributeNode("users"),
         @NamedAttributeNode("sprint"),
         @NamedAttributeNode("system")
 })
@@ -34,10 +35,10 @@ public class Task {
     private String number;
     @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
     private String summary;
-    @ManyToOne
+    @ManyToMany
     @JsonView(Views.ProjectsTaskView.class)
     @NotAudited
-    private User user;
+    private Set<User> users;
     @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
     private Integer estimate;
     @JsonView(Views.UsersTaskView.class)
@@ -67,5 +68,10 @@ public class Task {
     @NotAudited
     @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private Long unsigned;
+
+    @Formula("regexp_replace(number,'[0-9]+','')")
+    @NotAudited
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    private String textPart;
 
 }

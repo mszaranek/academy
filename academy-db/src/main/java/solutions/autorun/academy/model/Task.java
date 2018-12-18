@@ -61,6 +61,10 @@ public class Task {
     @JsonIgnore
     private System system;
 
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "task")
+    @NotAudited
+    private Set<Estimate> estimates;
+
     @NotAudited
     private String trelloId;
 

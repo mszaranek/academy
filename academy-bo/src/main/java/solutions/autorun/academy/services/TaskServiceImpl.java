@@ -7,10 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import solutions.autorun.academy.model.Estimate;
 import solutions.autorun.academy.model.QTask;
 import solutions.autorun.academy.model.QUser;
 import solutions.autorun.academy.model.Task;
+import solutions.autorun.academy.repositories.EstimateRepository;
 import solutions.autorun.academy.repositories.TaskRepository;
+import solutions.autorun.academy.repositories.UserRepository;
 import solutions.autorun.academy.views.Views;
 
 import javax.persistence.EntityManager;
@@ -24,6 +27,8 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final EntityManager entityManager;
+    private final UserRepository userRepository;
+    private final EstimateRepository estimateRepository;
 
     @Override
     public void saveTasks(Set<Task> tasks){
@@ -39,8 +44,7 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = new ArrayList<>(query
                 .from(qTask)
                 .join(qTask.users, qUser)
-                .on(qTask.users.any().id.eq(qUser.id))
-                .where(qTask.users.any().id.eq(userId))
+                .where(qUser.in(qTask.users))
                 .fetch());
         int start = (int) pageable.getOffset();
         int end =  (start + pageable.getPageSize()) > tasks.size() ? tasks.size() : (start + pageable.getPageSize());
@@ -52,5 +56,19 @@ public class TaskServiceImpl implements TaskService {
         catch(IllegalArgumentException e){
             return null;
         }
+    }
+
+    @Override
+    public void addEstimate(Long taskId, Long userId, Integer value){
+
+        Estimate estimate;
+        if(userRepository.findById(userId).get().getTasks().stream().anyMatch(task -> task.getEstimates().stream().anyMatch(estimate1 -> estimate1.getUser().getId()==userId))){
+            estimate = estimateRepository.findByUserAndTask(userRepository.findById(userId).get(),taskRepository.findById(taskId).get()).get();
+            estimate.setValue(value);
+        }
+        else {
+         estimate = new Estimate(userRepository.findById(userId).get(), taskRepository.findById(taskId).get(), value);
+        }
+        estimateRepository.save(estimate);
     }
 }

@@ -2,6 +2,8 @@ package solutions.autorun.academy.services;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final AppRoleRepository appRoleRepository;
     private final UserRepository userRepository;
     private final VerificationTokenRepository tokenRepository;
@@ -162,9 +165,10 @@ public class UserServiceImpl implements UserService {
         QTask qTask = QTask.task;
         List<Task> tasks = new ArrayList<>(query.from(qTask)
                 .orderBy(qTask.textPart.asc(),qTask.unsigned.asc()).fetch());
-        Predicate<Task> con1 = task -> task.getUsers()==(null);
+        Predicate<Task> con1 = task -> task.getUsers().isEmpty();
         Predicate<Task> con2 = task -> task.getUsers().stream().anyMatch(user -> user.getId().equals(userId));
         tasks = tasks.stream().filter(con1.or(con2)).collect(Collectors.toList());
+        //log.debug(tasks.toString());
         int start = (int) pageable.getOffset();
         int end =  (start + pageable.getPageSize()) > tasks.size() ? tasks.size() : (start + pageable.getPageSize());
         Page<Task> page = new PageImpl<>(tasks.subList(start,end), pageable, tasks.size());

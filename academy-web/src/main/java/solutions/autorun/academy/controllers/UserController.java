@@ -270,6 +270,7 @@ public class UserController {
     public ResponseEntity<Void> deleteLogwork(@RequestParam Long id) {
         logworkService.deleteLogwork(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @PostMapping(value = "users/{id}/tasks/{taskId}/estimates")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")

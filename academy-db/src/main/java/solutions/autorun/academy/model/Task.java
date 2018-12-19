@@ -63,7 +63,7 @@ public class Task {
     @JsonIgnore
     private System system;
 
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "task")
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "task")
     @NotAudited
     @JsonView(Views.InvoiceCreationFirstStepView.class)
     private Set<Estimate> estimates;

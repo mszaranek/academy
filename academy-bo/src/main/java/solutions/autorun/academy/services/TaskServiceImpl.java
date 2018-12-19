@@ -63,6 +63,7 @@ public class TaskServiceImpl implements TaskService {
     public Task findTaskById(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow((() -> new NotFoundException("Task not found")));
+    }
 
     public void addEstimate(Long taskId, Long userId, Integer value){
 

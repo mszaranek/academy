@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import solutions.autorun.academy.Converter.LocalDateConverter;
 import solutions.autorun.academy.model.Invoice;
+import solutions.autorun.academy.model.LogWork;
 import solutions.autorun.academy.model.Project;
 import solutions.autorun.academy.model.Task;
+import solutions.autorun.academy.services.LogworkService;
 import solutions.autorun.academy.services.ProjectService;
 import solutions.autorun.academy.views.Views;
 
@@ -19,6 +22,8 @@ import java.util.Set;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final LogworkService logworkService;
+    private final LocalDateConverter localDateConverter;
 
     @GetMapping(value = "/projects")
     public ResponseEntity<Set<Project>> showProjects() {
@@ -63,5 +68,11 @@ public class ProjectController {
     @JsonView(Views.ProjectsTaskView.class)
     public ResponseEntity<Set<Task>> findProjectsTasks(@PathVariable Long id) {
         return new ResponseEntity<>(projectService.getTasks(id), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "project/{id}/logworks")
+    @JsonView(Views.LogworkView.class)
+    public ResponseEntity<Set<LogWork>> getUsersLogworksInProject(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly) {
+        return new ResponseEntity<>(logworkService.getUsersLogworksInProject(id, localDateConverter.createDate(date), weekly), HttpStatus.OK);
     }
 }

@@ -11,6 +11,8 @@ import solutions.autorun.academy.views.Views;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -30,10 +32,11 @@ import java.util.Date;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(Views.LogworkView.class)
     private Long id;
-    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.LogworkView.class})
     private String number;
-    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class, Views.LogworkView.class})
     private String summary;
     @ManyToOne
     @JsonView(Views.ProjectsTaskView.class)
@@ -64,5 +67,10 @@ public class Task {
     @NotAudited
     @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private Long unsigned;
+
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "task")
+    @NotAudited
+//    @JsonView(Views.UserView.class)
+    private Set<LogWork> logWorks = new HashSet<>();
 
 }

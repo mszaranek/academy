@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import solutions.autorun.academy.exceptions.NotFoundException;
 import solutions.autorun.academy.model.QTask;
 import solutions.autorun.academy.model.QUser;
 import solutions.autorun.academy.model.Task;
@@ -49,5 +50,11 @@ public class TaskServiceImpl implements TaskService {
         catch(IllegalArgumentException e){
             return null;
         }
+    }
+
+    @Override
+    public Task findTaskById(Long id) {
+        return taskRepository.findById(id)
+                .orElseThrow((() -> new NotFoundException("Task not found")));
     }
 }

@@ -18,6 +18,10 @@ public class Views {
 
     }
 
+    public static class LogworkView {
+
+    }
+
     public static class UsersProjectsView {
 
     }

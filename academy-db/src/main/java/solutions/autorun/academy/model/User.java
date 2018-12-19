@@ -1,9 +1,6 @@
 package solutions.autorun.academy.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import solutions.autorun.academy.views.Views;
@@ -13,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-@EqualsAndHashCode(exclude = {"appRoles", "projects", "tasks", "invoices"})
+@EqualsAndHashCode(exclude = {"appRoles", "projects", "tasks", "invoices","logworks"})
 @Entity
 @Table(name = "\"user\"")
 @NoArgsConstructor
@@ -24,7 +21,8 @@ import java.util.Set;
         @NamedAttributeNode(value = "projects", subgraph ="userProjectEntityGraph"),
         @NamedAttributeNode(value = "appRoles"),
         @NamedAttributeNode(value = "tasks", subgraph = "userTasksEntityGraph"),
-        @NamedAttributeNode(value = "invoices")
+        @NamedAttributeNode(value = "invoices"),
+        @NamedAttributeNode(value = "logWorks")
 },
 subgraphs = {
         @NamedSubgraph(name="userProjectEntityGraph", attributeNodes = @NamedAttributeNode("systems")),
@@ -35,7 +33,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.UserView.class)
+    @JsonView({Views.UserView.class, Views.LogworkView.class})
     private Long id;
     @JsonView({Views.UserView.class,Views.ProjectsTaskView.class,Views.InvoiceView.class})
     private String username;
@@ -48,6 +46,7 @@ public class User {
     private String email;
     @JsonView(Views.UserView.class)
     private boolean activated;
+
 
     @ManyToMany
     @JsonView(Views.UserView.class)
@@ -62,6 +61,11 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "app_role_id"))
     @JsonManagedReference
     private Set<AppRole> appRoles = new HashSet<>();
+
+    @JsonView(Views.UserView.class)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user")
+    @JsonManagedReference(value = "user_logwork")
+    private Set<LogWork> logWorks = new HashSet<>();
 
     @JsonView(Views.UserView.class)
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user"/*, fetch = FetchType.EAGER*/)
@@ -96,6 +100,10 @@ public class User {
 
     public String getEmail() {
         return this.email;
+    }
+
+    public Set<LogWork> getLogworks(){
+        return this.logWorks;
     }
 
     public Set<Project> getProjects() {

@@ -36,7 +36,7 @@ public class Task {
     @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
     private String summary;
     @ManyToMany
-    @JsonView(Views.ProjectsTaskView.class)
+    @JsonView({Views.ProjectsTaskView.class,Views.InvoiceCreationSecondStepView.class})
     @NotAudited
     private Set<User> users;
     @JsonView({Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
@@ -63,6 +63,7 @@ public class Task {
 
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "task")
     @NotAudited
+    @JsonView(Views.InvoiceCreationFirstStepView.class)
     private Set<Estimate> estimates;
 
     @NotAudited

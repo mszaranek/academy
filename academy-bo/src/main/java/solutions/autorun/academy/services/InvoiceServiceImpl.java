@@ -126,7 +126,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
         invoice.getTasks().removeIf(task -> task.getNumber().equals(tasksInput.getNumber()));
-        invoice.setLifeCycleStatus("paired_with_tasks");
+        if(invoice.getTasks().isEmpty()){
+            invoice.setLifeCycleStatus("parsed");
+        }
+        else {
+            invoice.setLifeCycleStatus("paired_with_tasks");
+        }
         invoiceRepository.save(invoice);
         taskRepository.save(tasksInput);
         return invoice;

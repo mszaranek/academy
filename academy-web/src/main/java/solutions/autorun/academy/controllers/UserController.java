@@ -243,24 +243,27 @@ public class UserController {
 
     @GetMapping(value = "users/{id}/logworks")
     @JsonView(Views.LogworkView.class)
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
     public ResponseEntity<Set<LogWork>> getUserLogworks(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly) {
         return new ResponseEntity<>(logworkService.getUserLogwork(id, localDateConverter.createDate(date), weekly), HttpStatus.OK);
     }
 
     @PostMapping(value = "users/{id}/logworks")
     @JsonView(Views.LogworkView.class)
-//    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
     public ResponseEntity<LogWork> addLogwork(@PathVariable Long id, @RequestBody LogWorkDTO logWork, @RequestParam Long taskId) {
             return new ResponseEntity<>(logworkService.createLogwork(id, logWork, taskId), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "users/{id}/logworks")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
     @JsonView(Views.LogworkView.class)
     public ResponseEntity<LogWork> updateLogwork(@PathVariable Long id, @RequestBody LogWorkDTO logWork,@RequestParam Long logWorkId, @RequestParam Long taskId){
         return new ResponseEntity<>(logworkService.updateLogwork(logWorkId, logWork, taskId), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "users/{id}/logworks")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
     public ResponseEntity<Void> deleteLogwork(@RequestParam Long id) {
         logworkService.deleteLogwork(id);
         return new ResponseEntity<>(HttpStatus.OK);

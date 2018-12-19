@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import solutions.autorun.academy.exceptions.FileManagerException;
+import solutions.autorun.academy.security.exceptions.UserNotActivatedException;
 
 
 import java.io.IOException;
@@ -44,5 +45,12 @@ public class RestResponseEntityExceptionHandler
             Exception ex, WebRequest request) {
         return new ResponseEntity<>(
                 ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({ UserNotActivatedException.class })
+    public ResponseEntity<Object> UserNotActivatedException(
+            Exception ex, WebRequest request) {
+        return new ResponseEntity<>(
+                "Account is not activated", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

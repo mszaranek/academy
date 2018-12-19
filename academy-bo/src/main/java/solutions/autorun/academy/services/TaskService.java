@@ -10,6 +10,8 @@ public interface TaskService {
 
     void saveTasks(Set<Task> tasks);
 
+    Task findTaskById(Long id);
+
     Page<Task> getTasksForEstimation(Long userId, Pageable pageable);
 
     void addEstimate(Long taskId, Long userId, Integer value);

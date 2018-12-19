@@ -9,6 +9,7 @@ import solutions.autorun.academy.views.Views;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -30,10 +31,11 @@ import java.util.Set;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(Views.LogworkView.class)
     private Long id;
-    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class,Views.LogworkView.class})
     private String number;
-    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class,Views.LogworkView.class})
     private String summary;
     @ManyToMany
     @JsonView({Views.ProjectsTaskView.class,Views.InvoiceCreationSecondStepView.class})
@@ -74,6 +76,10 @@ public class Task {
     @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})
     private Long unsigned;
 
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "task")
+    @NotAudited
+//    @JsonView(Views.UserView.class)
+    private Set<LogWork> logWorks = new HashSet<>();
     @Formula("regexp_replace(number,'[0-9]+','')")
     @NotAudited
     @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class})

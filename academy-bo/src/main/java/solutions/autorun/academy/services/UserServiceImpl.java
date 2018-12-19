@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());
-        user.setActivated(true);
+        user.setActivated(false);
         Set<AppRole> defaultRoles = new HashSet<>();
         defaultRoles.add(appRoleRepository.findById(2l).get());
         user.setAppRoles(defaultRoles);

@@ -14,9 +14,9 @@ import java.util.Set;
 @Entity
 @Table(name = "\"user\"")
 @NoArgsConstructor
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "username")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "username")
 @NamedEntityGraph(name="userEntityGraph", attributeNodes={
         @NamedAttributeNode(value = "projects", subgraph ="userProjectEntityGraph"),
         @NamedAttributeNode(value = "appRoles"),
@@ -29,6 +29,7 @@ subgraphs = {
         @NamedSubgraph(name="userTasksEntityGraph", attributeNodes = @NamedAttributeNode("sprint"))
                 }
         )
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class User {
 
     @Id
@@ -52,14 +53,14 @@ public class User {
     @JsonView(Views.UserView.class)
     @JoinTable(name = "project_user", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id"))
-//    @JsonBackReference
+   // @JsonBackReference(value = "project_users")
     private Set<Project> projects = new HashSet<>();
 
     @ManyToMany
     @JsonView(Views.UserView.class)
     @JoinTable(name = "user_app_role", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "app_role_id"))
-    @JsonManagedReference
+    //@JsonManagedReference
     private Set<AppRole> appRoles = new HashSet<>();
 
     @JsonView(Views.UserView.class)
@@ -68,14 +69,16 @@ public class User {
     private Set<LogWork> logWorks = new HashSet<>();
 
     @JsonView(Views.UserView.class)
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user"/*, fetch = FetchType.EAGER*/)
+    @ManyToMany//(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user"/*, fetch = FetchType.EAGER*/)
 //    @JoinColumn(name="user_id")
+    @JoinTable(name = "task_user", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id"))
     private Set<Task> tasks = new HashSet<>();
 
     @JsonView(Views.UserView.class)
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user"/*, fetch = FetchType.EAGER*/)
 //    @JoinColumn(name="user_id")
-    @JsonManagedReference(value = "user_invoice")
+    //@JsonManagedReference(value = "user_invoice")
     private Set<Invoice> invoices = new HashSet<>();
 
     public Long getId() {

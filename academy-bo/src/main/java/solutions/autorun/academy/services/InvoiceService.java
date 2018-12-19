@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.Set;
 
 public interface InvoiceService {
+
     Set<Invoice> getInvoices();
 
     void createInvoice(Invoice invoice);

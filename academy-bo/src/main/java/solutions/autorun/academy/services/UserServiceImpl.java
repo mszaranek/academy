@@ -2,6 +2,8 @@ package solutions.autorun.academy.services;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,19 +23,19 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
 
-
-
+    private final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final AppRoleRepository appRoleRepository;
     private final UserRepository userRepository;
     private final VerificationTokenRepository tokenRepository;
     private final EntityManager entityManager;
     private final PasswordEncoder passwordEncoder;
-
 
     @Override
     public Set<User> getUsers() {
@@ -106,7 +108,6 @@ public class UserServiceImpl implements UserService {
         QProject qProject = QProject.project;
         return new HashSet<>(query
                 .from(qInvoice)
-                //.select(qInvoice.id, qInvoice.amount, qInvoice.paid, qInvoice.date, qInvoice.validationStatus)
                 .join(qInvoice.projects, qProject)
                 .on(qInvoice.projects.any().id.eq(qProject.id))
                 .join(qInvoice.user, qUser)
@@ -117,7 +118,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @EntityGraph(value = "taskEntityGraph")
+  //  @EntityGraph(value = "taskEntityGraph")
     public Set<Task> getUsersTasksInProject(Long userId, Long projectId) {
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QProject qProject = QProject.project;
@@ -131,14 +132,14 @@ public class UserServiceImpl implements UserService {
                 .on(qTask.system.id.eq(qSystem.id))
                 .join(qSystem.projects, qProject)
                 .on(qSystem.projects.any().id.eq(qSystem.id))
-                .join(qTask.user, qUser)
-                .on(qTask.user.id.eq(qUser.id))
+                .join(qTask.users, qUser)
+                .on(qTask.users.any().id.eq(qUser.id))
                 .where(qUser.id.eq(userId), qProject.id.eq(projectId))
                 .fetch());
     }
 
     @Override
-    @EntityGraph(value = "taskEntityGraph")
+   // @EntityGraph(value = "taskEntityGraph")
     public Set<Task> getTaskDetail(Long userId, Long projectId, Long taskId) {
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QProject qProject = QProject.project;
@@ -151,35 +152,27 @@ public class UserServiceImpl implements UserService {
                 .on(qTask.system.id.eq(qSystem.id))
                 .join(qSystem.projects, qProject)
                 .on(qSystem.projects.any().id.eq(qSystem.id))
-                .join(qTask.user, qUser)
-                .on(qTask.user.id.eq(qUser.id))
+                .join(qTask.users, qUser)
+                .on(qTask.users.any().id.eq(qUser.id))
                 .where(qUser.id.eq(userId), qProject.id.eq(projectId), qTask.id.eq(taskId))
                 .fetch());
     }
 
-
-
-
-
-
-
-
-
     @Override
-    public Page<Task> tempGetTasksFromProject(Pageable pageable){
+    public Page<Task> tempGetTasksFromProject(Pageable pageable, Long userId){
 
         JPAQuery<Task> query = new JPAQuery<>(entityManager);
         QTask qTask = QTask.task;
         List<Task> tasks = new ArrayList<>(query.from(qTask)
-                .orderBy(qTask.unsigned.asc()).fetch());
+                .orderBy(qTask.textPart.asc(),qTask.unsigned.asc()).fetch());
+        Predicate<Task> con1 = task -> task.getUsers().isEmpty();
+        Predicate<Task> con2 = task -> task.getUsers().stream().anyMatch(user -> user.getId().equals(userId));
+        tasks = tasks.stream().filter(con1.or(con2)).collect(Collectors.toList());
+        //log.debug(tasks.toString());
         int start = (int) pageable.getOffset();
         int end =  (start + pageable.getPageSize()) > tasks.size() ? tasks.size() : (start + pageable.getPageSize());
         Page<Task> page = new PageImpl<>(tasks.subList(start,end), pageable, tasks.size());
 
         return page;
-
     }
-
-
-
 }

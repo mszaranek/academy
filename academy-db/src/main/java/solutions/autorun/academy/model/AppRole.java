@@ -1,9 +1,6 @@
 package solutions.autorun.academy.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.EqualsAndHashCode;
 import solutions.autorun.academy.views.Views;
 
@@ -13,9 +10,10 @@ import java.util.Set;
 
 @Entity
 @EqualsAndHashCode(exclude = "users")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class AppRole {
 
     @Id

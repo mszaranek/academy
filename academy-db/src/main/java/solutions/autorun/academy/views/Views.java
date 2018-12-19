@@ -37,4 +37,6 @@ public class Views {
     public static class InvoiceCreationThirdStepView extends InvoiceCreationSecondStepView{
 
     }
+    public static class TaskView{
+    }
 }

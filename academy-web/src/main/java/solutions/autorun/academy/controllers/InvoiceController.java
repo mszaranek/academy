@@ -1,11 +1,13 @@
 package solutions.autorun.academy.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.services.InvoiceService;
+import solutions.autorun.academy.views.Views;
 
 import java.util.Set;
 
@@ -16,6 +18,7 @@ public class InvoiceController {
     private final InvoiceService invoiceService;
 
     @GetMapping
+    @JsonView(Views.InvoiceView.class)
     public ResponseEntity<Set<Invoice>> showInvoices() {
         long startTime = System.currentTimeMillis();
         Set<Invoice> invoices = invoiceService.getInvoices();
@@ -31,6 +34,7 @@ public class InvoiceController {
     }
 
     @GetMapping(value = "/{id}")
+    @JsonView(Views.InvoiceCreationThirdStepView.class)
     public ResponseEntity<Invoice> findInvoice(@PathVariable Long id) {
         return new ResponseEntity<>(invoiceService.findInvoiceById(id), HttpStatus.OK);
     }

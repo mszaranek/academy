@@ -13,4 +13,6 @@ public interface TaskService {
     Task findTaskById(Long id);
 
     Page<Task> getTasksForEstimation(Long userId, Pageable pageable);
+
+    void addEstimate(Long taskId, Long userId, Integer value);
 }

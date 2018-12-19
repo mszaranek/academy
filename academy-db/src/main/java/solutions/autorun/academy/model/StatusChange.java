@@ -1,5 +1,6 @@
 package solutions.autorun.academy.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class StatusChange {
 
     @Id

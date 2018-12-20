@@ -1,6 +1,7 @@
 package solutions.autorun.academy.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Entity
 @Data
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Estimate {
 
     @Id
@@ -25,8 +27,8 @@ public class Estimate {
     @ManyToOne
     @JsonIgnore
     private Task task;
-    @JsonView({Views.InvoiceCreationFirstStepView.class, Views.EstimateValueView.class})
 
+    @JsonView({Views.InvoiceCreationFirstStepView.class, Views.EstimateValueView.class,Views.TaskView.class})
     private Integer value;
 
     public Estimate(User user, Task task, Integer value){

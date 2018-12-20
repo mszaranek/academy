@@ -16,7 +16,7 @@ import java.util.Set;
 @Entity
 @Audited
 @Builder
-@EqualsAndHashCode(exclude = {"system","users","sprint"})
+@EqualsAndHashCode(exclude = {"system","users","sprint","estimates"})
 @NoArgsConstructor
 @AllArgsConstructor
 //@JsonIdentityInfo(
@@ -25,7 +25,8 @@ import java.util.Set;
 @NamedEntityGraph(name="taskEntityGraph", attributeNodes={
         @NamedAttributeNode("users"),
         @NamedAttributeNode("sprint"),
-        @NamedAttributeNode("system")
+        @NamedAttributeNode("system"),
+        @NamedAttributeNode("estimates")
 })
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Task {
@@ -66,7 +67,7 @@ public class Task {
 
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "task")
     @NotAudited
-    @JsonView(Views.InvoiceCreationFirstStepView.class)
+    @JsonView({Views.InvoiceCreationFirstStepView.class, Views.TaskView.class})
     private Set<Estimate> estimates;
 
     @ManyToOne

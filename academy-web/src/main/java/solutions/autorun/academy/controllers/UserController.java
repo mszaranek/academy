@@ -274,9 +274,16 @@ public class UserController {
 
     @PostMapping(value = "users/{id}/tasks/{taskId}/estimates")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
-    public ResponseEntity<Void> extractBillingDetails(@PathVariable Long id,@PathVariable Long taskId, @RequestBody Integer value) {
+    public ResponseEntity<Void> addEstimate(@PathVariable Long id,@PathVariable Long taskId, @RequestBody Integer value) {
         taskService.addEstimate(taskId,id,value);
         return new ResponseEntity<>( HttpStatus.CREATED);
 
+    }
+
+    @GetMapping(value = "users/{id}/tasks/{taskId}/estimate")
+    @JsonView(Views.EstimateValueView.class)
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    public ResponseEntity<Estimate> getEstimate(@PathVariable Long id,@PathVariable Long taskId) {
+        return new ResponseEntity<>(taskService.getEstimate(taskId,id), HttpStatus.OK);
     }
 }

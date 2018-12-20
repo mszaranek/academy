@@ -20,6 +20,7 @@ import solutions.autorun.academy.views.Views;
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -65,6 +66,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow((() -> new NotFoundException("Task not found")));
     }
 
+    @Override
     public void addEstimate(Long taskId, Long userId, Integer value){
 
         Estimate estimate;
@@ -76,5 +78,15 @@ public class TaskServiceImpl implements TaskService {
          estimate = new Estimate(userRepository.findById(userId).get(), taskRepository.findById(taskId).get(), value);
         }
         estimateRepository.save(estimate);
+    }
+
+    @Override
+    public Estimate getEstimate(Long taskId, Long userId){
+        try {
+            return estimateRepository.findByUserAndTask(userRepository.findById(userId).get(), taskRepository.findById(taskId).get()).get();
+        }
+        catch (NoSuchElementException e){
+            return null;
+        }
     }
 }

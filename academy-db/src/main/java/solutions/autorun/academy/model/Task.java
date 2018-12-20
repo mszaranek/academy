@@ -31,7 +31,7 @@ import java.util.Set;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.LogworkView.class)
+    //@JsonView(Views.LogworkView.class)
     private Long id;
     @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class,Views.LogworkView.class})
     private String number;

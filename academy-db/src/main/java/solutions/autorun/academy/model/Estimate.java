@@ -25,7 +25,7 @@ public class Estimate {
     @ManyToOne
     @JsonIgnore
     private Task task;
-    @JsonView(Views.InvoiceCreationFirstStepView.class)
+    @JsonView({Views.InvoiceCreationFirstStepView.class, Views.EstimateValueView.class})
 
     private Integer value;
 

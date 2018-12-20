@@ -22,6 +22,10 @@ public class Views {
 
     }
 
+    public static class LogworkViewInProject {
+
+    }
+
     public static class UsersProjectsView {
 
     }

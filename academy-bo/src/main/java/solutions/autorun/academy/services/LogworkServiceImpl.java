@@ -61,19 +61,20 @@ public class LogworkServiceImpl implements LogworkService {
     }
 
     @Override
-    public Set<LogWork> getUsersLogworksInProject(Long id, LocalDate localDate, boolean weekly) {
-//        JPAQuery<LogWork> query = new JPAQuery<>(entityManager);
-//        QUser qUser = QUser.user;
-//        QLogWork qLogWork = QLogWork.logWork;
-//        QProject qProject = QProject.project;
-//        HashSet<LogWork> logWorks = new HashSet<>(query
-//                .from(qLogWork)
-//                .join(qProject.users, qUser)
-//                .on(qProject.users.id.eq(qUser.id))
-//                .join(qUser.projects, qProject)
-//                .on(qUser.projects.any().id.eq(qProject.id))
-//                .where(qLogWork.date.between(localDate.with(DayOfWeek.MONDAY), localDate.with(DayOfWeek.SUNDAY)))
-//                .fetch());
+    public Set<LogWork> getUsersLogworksInProject(Long projectId, LocalDate localDate, boolean weekly) {
+        JPAQuery<LogWork> query = new JPAQuery<>(entityManager);
+        QUser qUser = QUser.user;
+        QLogWork qLogWork = QLogWork.logWork;
+        QProject qProject = QProject.project;
+        QTask qTask = QTask.task;
+        HashSet<LogWork> logWorks = new HashSet<>(query
+                .from(qLogWork)
+                .join(qLogWork.task, qTask)
+                .on(qLogWork.task.id.eq(qTask.id))
+                .join(qTask.project, qProject)
+                .on(qProject.id.eq(qProject.id))
+                .where(qProject.id.eq(projectId), qLogWork.date.between(localDate.with(DayOfWeek.MONDAY), localDate.with(DayOfWeek.SUNDAY)))
+                .fetch());
         return null;
     }
 

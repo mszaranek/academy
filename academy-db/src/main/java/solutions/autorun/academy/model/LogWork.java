@@ -25,19 +25,19 @@ import java.time.LocalDate;
 public class LogWork {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView({Views.UserView.class, Views.LogworkView.class})
+    @JsonView({Views.UserView.class, Views.LogworkView.class, Views.LogworkViewInProject.class})
     private Long id;
-    @JsonView({Views.UserView.class, Views.LogworkView.class})
+    @JsonView({Views.UserView.class, Views.LogworkView.class, Views.LogworkViewInProject.class})
     private LocalDate date;
-    @JsonView({Views.UserView.class, Views.LogworkView.class})
+    @JsonView({Views.UserView.class, Views.LogworkView.class, Views.LogworkViewInProject.class})
     private String description;
-    @JsonView({Views.UserView.class, Views.LogworkView.class})
+    @JsonView({Views.UserView.class, Views.LogworkView.class, Views.LogworkViewInProject.class})
     private Long workedTime;
-    @JsonView({Views.UserView.class, Views.LogworkView.class})
+    @JsonView({Views.UserView.class, Views.LogworkView.class, Views.LogworkViewInProject.class})
     @ManyToOne
     private Task task;
     @ManyToOne
-    @JsonView(Views.LogworkView.class)
     @JsonBackReference(value = "user_worklog")
+    @JsonView({Views.LogworkView.class, Views.LogworkViewInProject.class})
     private User user;
 }

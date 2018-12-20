@@ -34,7 +34,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView({Views.UserView.class, Views.LogworkView.class})
+    @JsonView({Views.UserView.class, Views.LogworkView.class, Views.LogworkViewInProject.class})
     private Long id;
     @JsonView({Views.UserView.class,Views.ProjectsTaskView.class,Views.InvoiceView.class})
     private String username;

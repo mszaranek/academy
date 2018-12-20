@@ -69,11 +69,11 @@ public class ProjectController {
     @GetMapping(value = "project/{id}/tasks")
     @JsonView(Views.ProjectsTaskView.class)
     public ResponseEntity<Set<Task>> findProjectsTasks(@PathVariable Long id) {
-        return new ResponseEntity<>(projectService.getTasks(id), HttpStatus.OK);
+        return new ResponseEntity<>(projectService.findProjectById(id).getTasks(), HttpStatus.OK);
     }
 
     @GetMapping(value = "project/{id}/logworks")
-    @JsonView(Views.LogworkView.class)
+    @JsonView(Views.LogworkViewInProject.class)
     public ResponseEntity<Set<LogWork>> getUsersLogworksInProject(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly) {
         return new ResponseEntity<>(logworkService.getUsersLogworksInProject(id, localDateConverter.createDate(date), weekly), HttpStatus.OK);
     }

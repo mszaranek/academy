@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@EqualsAndHashCode(exclude = {"users", "systems", "invoices", "projRoles"})
+@EqualsAndHashCode(exclude = {"users", "systems", "invoices", "projRoles", "tasks"})
 @Entity
 //@JsonIdentityInfo(
 //        generator = ObjectIdGenerators.PropertyGenerator.class,
@@ -20,14 +20,16 @@ public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(Views.LogworkView.class)
     private Long id;
-    @JsonView({Views.UserView.class,Views.UsersProjectsView.class})
+    @JsonView({Views.UserView.class,Views.UsersProjectsView.class,Views.LogworkView.class})
     private String name;
+    @JsonIgnore
     private Double monthlyCost;
+    @JsonIgnore
     private String status;
 
     @ManyToMany(cascade = {CascadeType.MERGE}, mappedBy = "projects")
-    //@JsonManagedReference(value = "project_users")
     @JsonIgnore
     private Set<User> users = new HashSet<>();
     @ManyToMany(cascade = {CascadeType.MERGE}, mappedBy = "projects")
@@ -39,6 +41,12 @@ public class Project {
     @ManyToMany(cascade = {CascadeType.MERGE}, mappedBy = "projects")
     @JsonIgnore
     private Set<ProjRole> projRoles = new HashSet<>();
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "project")
+    @JsonIgnore
+    private Set<Task> tasks = new HashSet<>();
+
+
+
 
     public Project() {
 

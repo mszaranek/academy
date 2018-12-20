@@ -16,7 +16,7 @@ import java.util.Set;
 @Entity
 @Audited
 @Builder
-@EqualsAndHashCode(exclude = {"system","users","sprint"})
+@EqualsAndHashCode(exclude = {"system","users","sprint", "project"})
 @NoArgsConstructor
 @AllArgsConstructor
 //@JsonIdentityInfo(
@@ -25,17 +25,18 @@ import java.util.Set;
 @NamedEntityGraph(name="taskEntityGraph", attributeNodes={
         @NamedAttributeNode("users"),
         @NamedAttributeNode("sprint"),
+        @NamedAttributeNode("project"),
         @NamedAttributeNode("system")
 })
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.LogworkView.class)
+    @JsonView({Views.LogworkView.class, Views.ProjectsTaskView.class, Views.LogworkViewInProject.class})
     private Long id;
-    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class,Views.LogworkView.class})
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
     private String number;
-    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class,Views.LogworkView.class})
+    @JsonView({Views.UserView.class, Views.UsersTaskView.class,Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class,Views.LogworkView.class, Views.LogworkViewInProject.class, Views.ProjectsTaskView.class})
     private String summary;
     @ManyToMany
     @JsonView({Views.ProjectsTaskView.class,Views.InvoiceCreationSecondStepView.class})
@@ -56,9 +57,10 @@ public class Task {
     private String type;
     @ManyToOne
     @NotAudited
+    @JsonIgnore
     private Sprint sprint;
     @ManyToOne(cascade = {CascadeType.REMOVE})
-    @JsonView({Views.UsersTaskView.class, Views.InvoiceCreationThirdStepView.class,Views.InvoiceView.class, Views.TaskView.class})
+    @JsonView({Views.UsersTaskView.class, Views.InvoiceCreationThirdStepView.class, Views.TaskView.class})
     @NotAudited
     @JsonIgnore
     private System system;
@@ -68,7 +70,13 @@ public class Task {
     @JsonView(Views.InvoiceCreationFirstStepView.class)
     private Set<Estimate> estimates;
 
+    @ManyToOne
     @NotAudited
+    @JsonView(Views.LogworkView.class)
+    private Project project;
+
+    @NotAudited
+    @JsonIgnore
     private String trelloId;
 
     @Formula("regexp_replace(number,'[^0-9]+','') ::integer")
@@ -79,6 +87,7 @@ public class Task {
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "task")
     @NotAudited
 //    @JsonView(Views.UserView.class)
+    @JsonIgnore
     private Set<LogWork> logWorks = new HashSet<>();
     @Formula("regexp_replace(number,'[0-9]+','')")
     @NotAudited

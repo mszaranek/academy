@@ -232,7 +232,7 @@ public class UserController {
     @GetMapping(value = "users/{id}/invoices/tasks/estimation")
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
     @Transactional
-    @JsonView(Views.TaskView.class)
+    @JsonView({Views.TaskView.class})
     public ResponseEntity<Page<Task>> getTasksForEstimation(@PathVariable Long id, @PageableDefault(sort="number") Pageable pageable) {
         return new ResponseEntity<>(userService.tempGetTasksFromProject(pageable, id), HttpStatus.OK);
     }

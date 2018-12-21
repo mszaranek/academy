@@ -47,4 +47,8 @@ public class Views {
     public static class EstimateValueView{
 
     }
+
+    public static class EstimateTaskView{
+
+    }
 }

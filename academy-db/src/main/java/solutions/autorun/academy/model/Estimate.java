@@ -22,10 +22,10 @@ public class Estimate {
     private Long id;
     @ManyToOne
     //@JsonView(Views.InvoiceCreationFirstStepView.class)
-    @JsonIgnore
+    @JsonView(Views.TaskView.class)
     private User user;
     @ManyToOne
-    @JsonIgnore
+   @JsonIgnore
     private Task task;
 
     @JsonView({Views.InvoiceCreationFirstStepView.class, Views.EstimateValueView.class,Views.TaskView.class})

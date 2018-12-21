@@ -20,7 +20,7 @@ public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.LogworkView.class)
+    //@JsonView(Views.LogworkView.class)
     private Long id;
     @JsonView({Views.UserView.class,Views.UsersProjectsView.class,Views.LogworkView.class})
     private String name;
@@ -42,7 +42,7 @@ public class Project {
     @JsonIgnore
     private Set<ProjRole> projRoles = new HashSet<>();
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "project")
-    @JsonIgnore
+    @JsonView(Views.ProjectsTaskView.class)
     private Set<Task> tasks = new HashSet<>();
 
 

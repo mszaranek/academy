@@ -42,7 +42,7 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "project/{id}")
+    @GetMapping(value = "projects/{id}")
     public ResponseEntity<Project> findProject(@PathVariable Long id) {
         return new ResponseEntity<>(projectService.findProjectById(id), HttpStatus.OK);
     }
@@ -54,25 +54,25 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "project/{id}")
+    @DeleteMapping(value = "projects/{id}")
     public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(value = "project/{id}/invoices")
+    @GetMapping(value = "projects/{id}/invoices")
     @JsonView(Views.InvoiceView.class)
     public ResponseEntity<Set<Invoice>> findProjectsInvoices(@PathVariable Long id) {
         return new ResponseEntity<>(projectService.findProjectById(id).getInvoices(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "project/{id}/tasks")
+    @GetMapping(value = "projects/{id}/tasks")
     @JsonView(Views.ProjectsTaskView.class)
     public ResponseEntity<Set<Task>> findProjectsTasks(@PathVariable Long id) {
         return new ResponseEntity<>(projectService.findProjectById(id).getTasks(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "project/{id}/logworks")
+    @GetMapping(value = "projects/{id}/logworks")
     @JsonView(Views.LogworkViewInProject.class)
     public ResponseEntity<Set<LogWork>> getUsersLogworksInProject(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly) {
         return new ResponseEntity<>(logworkService.getUsersLogworksInProject(id, localDateConverter.createDate(date), weekly), HttpStatus.OK);

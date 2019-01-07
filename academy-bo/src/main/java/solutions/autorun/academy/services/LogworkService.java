@@ -13,19 +13,25 @@ public interface LogworkService {
 
     LogWork updateLogwork(Long id, LogWorkDTO logWork, Long taskId);
 
+    LogWork updateLogworkByManager(Long id, LogWorkDTO logWork, Long taskId);
+
     Set<LogWork> getUserLogwork(Long id, LocalDate localDate, boolean weekly);
 
-    Set<LogWork> getUserLogworkWeek(Long id, LocalDate localDate);
+    Set<LogWork> getUserLogworkWeek(Long id, LocalDate localDate, boolean manager);
 
-    Set<LogWork> getUserLogworkDay(Long id, LocalDate localDate);
+    Set<LogWork> getUserLogworkDay(Long id, LocalDate localDate, boolean manager);
 
-    Set<LogWork> getUserLogworkMonth(Long id, LocalDate localDate);
+    Set<LogWork> getUserLogworkMonth(Long id, LocalDate localDate, boolean manager);
 
     Set<LogWork> getUsersLogworksInProject(Long id, LocalDate localDate, boolean weekly);
 
     Set<LogWork> sendToValidation(Long id, LocalDate localDate, boolean weekly);
 
     Set<LogWork> sendDayToValidation(Long id, LocalDate localDate);
+
+    Set<LogWork> acceptLogworks(Long id, LocalDate localDate, boolean weekly, Long userId);
+
+    Set<LogWork> acceptDayLogworks(Long id, LocalDate localDate, Long userId);
 
     void deleteLogwork(Long id);
 

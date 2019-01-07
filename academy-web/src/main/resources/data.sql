@@ -34,10 +34,10 @@ INSERT INTO public.task (id, number, estimate, start_date, finish_date, status, 
 -- INSERT INTO public.task (id, number, user_id, estimate, start_date, finish_date, status, type, sprint_id, system_id) VALUES (7, 3412, 2, 0, '2018-11-13', '2018-11-13', 'done', 'bug', null, 1);
 -- INSERT INTO public.task (id, number, user_id, estimate, start_date, finish_date, status, type, sprint_id, system_id) VALUES (8, 1589, 2, 5, '2018-11-13', '2018-11-13', 'done', 'task', null, 1);
 ALTER SEQUENCE public.task_id_seq RESTART WITH 9;
-INSERT INTO public.log_work(id,date,description,worked_time,task_id, user_id, status) VALUES (1,date('2018-12-17'),'description1',5,1,2,'in progress');
-INSERT INTO public.log_work(id,date,description,worked_time,task_id, user_id, status) VALUES (2,date('2018-12-18'),'description2',7,1,2,'in progress' );
-INSERT INTO public.log_work(id,date,description,worked_time,task_id, user_id, status) VALUES (3,date('2018-12-19'),'description3',9,1,2,'in progress' );
-INSERT INTO public.log_work(id,date,description,worked_time,task_id, user_id, status) VALUES (4,date('2018-12-10'),'description4',12,1,2,'in progress' );
+INSERT INTO public.log_work(id,date,description,worked_time,task_id, user_id, status) VALUES (1,date('2018-12-17'),'description1',5,1,2,'inProgress');
+INSERT INTO public.log_work(id,date,description,worked_time,task_id, user_id, status) VALUES (2,date('2018-12-18'),'description2',7,1,2,'inProgress' );
+INSERT INTO public.log_work(id,date,description,worked_time,task_id, user_id, status) VALUES (3,date('2018-12-19'),'description3',9,1,2,'inProgress' );
+INSERT INTO public.log_work(id,date,description,worked_time,task_id, user_id, status) VALUES (4,date('2018-12-10'),'description4',12,1,2,'inProgress' );
 ALTER SEQUENCE public.log_work_id_seq RESTART WITH 5;
 INSERT INTO public.project_invoice (project_id, invoice_id) VALUES (1, 1);
 INSERT INTO public.project_invoice (project_id, invoice_id) VALUES (2, 2);

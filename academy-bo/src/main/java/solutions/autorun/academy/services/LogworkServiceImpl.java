@@ -12,6 +12,7 @@ import solutions.autorun.academy.repositories.LogworkRepository;
 import javax.persistence.EntityManager;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ public class LogworkServiceImpl implements LogworkService {
     public LogWork createLogwork(Long id, LogWorkDTO logWorkDTO, Long taskId) {
         LogWork logWork = new LogWork();
         logWork.setId(null);
+        logWork.setStatus("in progress");
         logWork.setDate(localDateConverter.createDate(logWorkDTO.getDate()));
         logWork.setDescription(logWorkDTO.getDescription());
         logWork.setWorkedTime(logWorkDTO.getWorkedTime());
@@ -47,7 +49,7 @@ public class LogworkServiceImpl implements LogworkService {
     }
 
     @Override
-    public Set<LogWork> getUserLogwork(Long id, LocalDate localDate, boolean weekly) {
+    public Set<LogWork> getUserLogworkWeek(Long id, LocalDate localDate) {
         JPAQuery<LogWork> query = new JPAQuery<>(entityManager);
         QUser qUser = QUser.user;
         QLogWork qLogWork = QLogWork.logWork;
@@ -56,6 +58,34 @@ public class LogworkServiceImpl implements LogworkService {
                 .join(qLogWork.user, qUser)
                 .on(qLogWork.user.id.eq(qUser.id))
                 .where(qUser.id.eq(id), qLogWork.date.between(localDate.with(DayOfWeek.MONDAY), localDate.with(DayOfWeek.SUNDAY)))
+                .fetch());
+        return logWorks;
+    }
+
+    @Override
+    public Set<LogWork> getUserLogworkMonth(Long id, LocalDate localDate) {
+        JPAQuery<LogWork> query = new JPAQuery<>(entityManager);
+        QUser qUser = QUser.user;
+        QLogWork qLogWork = QLogWork.logWork;
+        HashSet<LogWork> logWorks = new HashSet<>(query
+                .from(qLogWork)
+                .join(qLogWork.user, qUser)
+                .on(qLogWork.user.id.eq(qUser.id))
+                .where(qUser.id.eq(id), qLogWork.date.between(localDate.withDayOfMonth(1), localDate.withDayOfMonth(localDate.lengthOfMonth())))
+                .fetch());
+        return logWorks;
+    }
+
+    @Override
+    public Set<LogWork> getUserLogworkDay(Long id, LocalDate localDate) {
+        JPAQuery<LogWork> query = new JPAQuery<>(entityManager);
+        QUser qUser = QUser.user;
+        QLogWork qLogWork = QLogWork.logWork;
+        HashSet<LogWork> logWorks = new HashSet<>(query
+                .from(qLogWork)
+                .join(qLogWork.user, qUser)
+                .on(qLogWork.user.id.eq(qUser.id))
+                .where(qUser.id.eq(id), qLogWork.date.eq(localDate))
                 .fetch());
         return logWorks;
     }
@@ -76,6 +106,45 @@ public class LogworkServiceImpl implements LogworkService {
                 .where(qProject.id.eq(projectId), qLogWork.date.between(localDate.with(DayOfWeek.MONDAY), localDate.with(DayOfWeek.SUNDAY)))
                 .fetch());
         return null;
+    }
+
+    @Override
+    public Set<LogWork> sendToValidation(Long id, LocalDate localDate, boolean weekly) {
+        Set<LogWork> logWorks = new HashSet<>();
+        if(weekly){
+            logWorks = getUserLogworkWeek(id, localDate);
+        }
+        else if (!weekly){
+            logWorks = getUserLogworkMonth(id, localDate);
+        }
+
+        for (LogWork logWork: logWorks) {
+            logWork.setStatus("sent to validation");
+            logworkRepository.save(logWork);
+        }
+        return logWorks;
+    }
+
+    public Set<LogWork> sendDayToValidation(Long id, LocalDate localDate) {
+        Set<LogWork> logWorks = getUserLogworkDay(id, localDate);
+
+        for (LogWork logWork: logWorks) {
+            logWork.setStatus("sent to validation");
+            logworkRepository.save(logWork);
+        }
+        return logWorks;
+    }
+
+    @Override
+    public Set<LogWork> getUserLogwork(Long id, LocalDate localDate, boolean weekly) {
+        Set<LogWork> logWorks = new HashSet<>();
+        if(weekly){
+            logWorks = getUserLogworkWeek(id, localDate);
+        }
+        else{
+            logWorks = getUserLogworkMonth(id, localDate);
+        }
+        return  logWorks;
     }
 
     @Override

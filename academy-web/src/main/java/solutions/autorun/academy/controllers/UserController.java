@@ -251,6 +251,21 @@ public class UserController {
         return new ResponseEntity<>(logworkService.getUserLogwork(id, localDateConverter.createDate(date), weekly), HttpStatus.OK);
     }
 
+
+    @PutMapping(value = "users/{id}/logworks/validate")
+    @JsonView(Views.LogworkView.class)
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    public ResponseEntity<Set<LogWork>> sendToValidation(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly) {
+        return new ResponseEntity<>(logworkService.sendToValidation(id, localDateConverter.createDate(date), weekly), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "users/{id}/logworks/validate/day")
+    @JsonView(Views.LogworkView.class)
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    public ResponseEntity<Set<LogWork>> sendDayToValidation(@PathVariable Long id, @RequestParam String date) {
+        return new ResponseEntity<>(logworkService.sendDayToValidation(id, localDateConverter.createDate(date)), HttpStatus.OK);
+    }
+
     @PostMapping(value = "users/{id}/logworks")
     @JsonView(Views.LogworkView.class)
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
@@ -286,4 +301,7 @@ public class UserController {
     public ResponseEntity<Estimate> getEstimate(@PathVariable Long id,@PathVariable Long taskId) {
         return new ResponseEntity<>(taskService.getEstimate(taskId,id), HttpStatus.OK);
     }
+
+
+
 }

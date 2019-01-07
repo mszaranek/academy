@@ -1,9 +1,6 @@
 package solutions.autorun.academy.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import solutions.autorun.academy.views.Views;
@@ -13,32 +10,35 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-@EqualsAndHashCode(exclude = {"appRoles", "projects", "tasks", "invoices"})
+@EqualsAndHashCode(exclude = {"appRoles", "projects", "tasks", "invoices","logworks"})
 @Entity
 @Table(name = "\"user\"")
 @NoArgsConstructor
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "username")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "username")
 @NamedEntityGraph(name="userEntityGraph", attributeNodes={
         @NamedAttributeNode(value = "projects", subgraph ="userProjectEntityGraph"),
         @NamedAttributeNode(value = "appRoles"),
         @NamedAttributeNode(value = "tasks", subgraph = "userTasksEntityGraph"),
-        @NamedAttributeNode(value = "invoices")
+        @NamedAttributeNode(value = "invoices"),
+        @NamedAttributeNode(value = "logWorks")
 },
 subgraphs = {
         @NamedSubgraph(name="userProjectEntityGraph", attributeNodes = @NamedAttributeNode("systems")),
         @NamedSubgraph(name="userTasksEntityGraph", attributeNodes = @NamedAttributeNode("sprint"))
                 }
         )
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.UserView.class)
+    @JsonView({Views.UserView.class, Views.LogworkView.class, Views.LogworkViewInProject.class,Views.EstimateTaskView.class,Views.TaskView.class})
     private Long id;
     @JsonView({Views.UserView.class,Views.ProjectsTaskView.class,Views.InvoiceView.class})
     private String username;
+    @JsonIgnore
     private String password;
     @JsonView(Views.UserView.class)
     private String firstName;
@@ -49,29 +49,37 @@ public class User {
     @JsonView(Views.UserView.class)
     private boolean activated;
 
+
     @ManyToMany
     @JsonView(Views.UserView.class)
     @JoinTable(name = "project_user", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id"))
-//    @JsonBackReference
+   // @JsonBackReference(value = "project_users")
     private Set<Project> projects = new HashSet<>();
 
     @ManyToMany
     @JsonView(Views.UserView.class)
     @JoinTable(name = "user_app_role", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "app_role_id"))
-    @JsonManagedReference
+    //@JsonManagedReference
     private Set<AppRole> appRoles = new HashSet<>();
 
     @JsonView(Views.UserView.class)
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user"/*, fetch = FetchType.EAGER*/)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user")
+    @JsonManagedReference(value = "user_logwork")
+    private Set<LogWork> logWorks = new HashSet<>();
+
+    @JsonView(Views.UserView.class)
+    @ManyToMany//(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user"/*, fetch = FetchType.EAGER*/)
 //    @JoinColumn(name="user_id")
+    @JoinTable(name = "task_user", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id"))
     private Set<Task> tasks = new HashSet<>();
 
     @JsonView(Views.UserView.class)
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "user"/*, fetch = FetchType.EAGER*/)
 //    @JoinColumn(name="user_id")
-    @JsonManagedReference(value = "user_invoice")
+    //@JsonManagedReference(value = "user_invoice")
     private Set<Invoice> invoices = new HashSet<>();
 
     public Long getId() {
@@ -96,6 +104,10 @@ public class User {
 
     public String getEmail() {
         return this.email;
+    }
+
+    public Set<LogWork> getLogworks(){
+        return this.logWorks;
     }
 
     public Set<Project> getProjects() {

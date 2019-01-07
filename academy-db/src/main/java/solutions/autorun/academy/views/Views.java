@@ -18,6 +18,14 @@ public class Views {
 
     }
 
+    public static class LogworkView {
+
+    }
+
+    public static class LogworkViewInProject {
+
+    }
+
     public static class UsersProjectsView {
 
     }
@@ -31,6 +39,16 @@ public class Views {
     }
 
     public static class InvoiceCreationThirdStepView extends InvoiceCreationSecondStepView{
+
+    }
+    public static class TaskView{
+    }
+
+    public static class EstimateValueView{
+
+    }
+
+    public static class EstimateTaskView{
 
     }
 }

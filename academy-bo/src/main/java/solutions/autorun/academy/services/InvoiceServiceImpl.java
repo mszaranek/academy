@@ -11,6 +11,7 @@ import solutions.autorun.academy.model.BillingDetails;
 import solutions.autorun.academy.model.Invoice;
 import solutions.autorun.academy.model.Task;
 import solutions.autorun.academy.repositories.InvoiceRepository;
+import solutions.autorun.academy.repositories.TaskRepository;
 import solutions.autorun.academy.repositories.UserRepository;
 
 import javax.persistence.EntityManager;
@@ -25,6 +26,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final FileManager fileManager;
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
 
     @Override
     public Set<Invoice> getInvoices() {
@@ -64,8 +66,6 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setLifeCycleStatus("uploaded");
         invoiceRepository.save(invoice);
         return invoice;
-
-
     }
 
     @Override
@@ -79,13 +79,13 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .create();
 
         Invoice invoiceInput = gson.fromJson(invoiceString, Invoice.class);
-
         Invoice invoice = invoiceRepository.findById(invoiceInput.getId()).orElseThrow(() -> new NotFoundException("Invoice not found"));
         invoice.setAmount(invoiceInput.getAmount());
         invoice.setCurrency(invoiceInput.getCurrency());
         invoice.setHours(invoiceInput.getHours());
         invoice.setVat(invoiceInput.getVat());
         invoice.setDate(invoiceInput.getDate());
+        invoice.setNumber(invoiceInput.getNumber());
         invoice.setPayday(invoiceInput.getPayday());
         invoice.setLifeCycleStatus("parsed");
         invoiceRepository.save(invoice);
@@ -102,11 +102,12 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .setDateFormat("yyyy/MM/dd HH:mm:ss [Z]")//
                 .create();
         Task tasksInput = gson.fromJson(tasksString, Task.class);
-        tasksInput.setUser(userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User Not Found")));
+        tasksInput.getUsers().add(userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User Not Found")));
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
         invoice.getTasks().add(tasksInput);
         invoice.setLifeCycleStatus("paired_with_tasks");
         invoiceRepository.save(invoice);
+        taskRepository.save(tasksInput);
         return invoice;
     }
 
@@ -121,11 +122,18 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .create();
 
         Task tasksInput = gson.fromJson(tasksString, Task.class);
-        tasksInput.setUser(null);
+        tasksInput.getUsers().remove(userRepository.findById(userId));
+
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()-> new NotFoundException("Invoice not found"));
         invoice.getTasks().removeIf(task -> task.getNumber().equals(tasksInput.getNumber()));
-        invoice.setLifeCycleStatus("paired_with_tasks");
+        if(invoice.getTasks().isEmpty()){
+            invoice.setLifeCycleStatus("parsed");
+        }
+        else {
+            invoice.setLifeCycleStatus("paired_with_tasks");
+        }
         invoiceRepository.save(invoice);
+        taskRepository.save(tasksInput);
         return invoice;
     }
 
@@ -155,13 +163,23 @@ public class InvoiceServiceImpl implements InvoiceService {
         BillingDetails billingDetails = new BillingDetails();
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(()->new NotFoundException("Invoice not found"));
         Set<Task> tasks = invoice.getTasks();
-        billingDetails.setTotalEstimatedHours(tasks.stream().mapToLong(Task::getEstimate).sum());
-        billingDetails.setInvoiceEstimationDifference(billingDetails.getTotalEstimatedHours() - invoice.getHours());
-        billingDetails.setBugEstimatedHours(tasks.stream().filter(task -> task.getStatus().toLowerCase().equals("bug")).mapToLong(Task::getEstimate).sum());
-        billingDetails.setDoneEstimatedHours(tasks.stream().filter(task -> task.getStatus().toLowerCase().equals("done")).mapToLong(Task::getEstimate).sum());
-        billingDetails.setBugPercentage((billingDetails.getBugEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
-        billingDetails.setBugPercentage((billingDetails.getDoneEstimatedHours()/billingDetails.getTotalEstimatedHours()*100));
 
+        Long totalEstimatedHours = tasks.stream().mapToLong(Task::getEstimate).sum();
+        Long invoiceEstimationDifference = totalEstimatedHours - invoice.getHours();
+        Long bugEstimatedHours = tasks.stream().filter(task -> task.getStatus().trim().toLowerCase().equals("bug")).mapToLong(Task::getEstimate).sum();
+        Long doneEstimatedHours = tasks.stream().filter(task -> task.getStatus().trim().toLowerCase().equals("done")).mapToLong(Task::getEstimate).sum();
+        Long bugPercentage = (bugEstimatedHours*100)/totalEstimatedHours;
+        Long donePercentage = (doneEstimatedHours*100)/totalEstimatedHours;
+
+
+
+        billingDetails.setTotalEstimatedHours(totalEstimatedHours);
+        billingDetails.setInvoiceEstimationDifference(invoiceEstimationDifference);
+        billingDetails.setBugEstimatedHours(bugEstimatedHours);
+        billingDetails.setDoneEstimatedHours(doneEstimatedHours);
+        billingDetails.setBugPercentage(bugPercentage);
+        billingDetails.setDonePercentage(donePercentage);
+        billingDetails.setHoursReported(invoice.getHours());
         return gson.toJson(billingDetails);
     }
 }

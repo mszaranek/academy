@@ -4,10 +4,14 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import solutions.autorun.academy.Converter.LocalDateConverter;
 import solutions.autorun.academy.model.Invoice;
+import solutions.autorun.academy.model.LogWork;
 import solutions.autorun.academy.model.Project;
 import solutions.autorun.academy.model.Task;
+import solutions.autorun.academy.services.LogworkService;
 import solutions.autorun.academy.services.ProjectService;
 import solutions.autorun.academy.views.Views;
 
@@ -19,6 +23,8 @@ import java.util.Set;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final LogworkService logworkService;
+    private final LocalDateConverter localDateConverter;
 
     @GetMapping(value = "/projects")
     public ResponseEntity<Set<Project>> showProjects() {
@@ -30,12 +36,13 @@ public class ProjectController {
     }
 
     @PostMapping(value = "/projects")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<Void> createProject(@RequestBody Project project) {
         projectService.createProject(project);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "project/{id}")
+    @GetMapping(value = "projects/{id}")
     public ResponseEntity<Project> findProject(@PathVariable Long id) {
         return new ResponseEntity<>(projectService.findProjectById(id), HttpStatus.OK);
     }
@@ -47,21 +54,27 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "project/{id}")
+    @DeleteMapping(value = "projects/{id}")
     public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(value = "project/{id}/invoices")
+    @GetMapping(value = "projects/{id}/invoices")
     @JsonView(Views.InvoiceView.class)
     public ResponseEntity<Set<Invoice>> findProjectsInvoices(@PathVariable Long id) {
         return new ResponseEntity<>(projectService.findProjectById(id).getInvoices(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "project/{id}/tasks")
+    @GetMapping(value = "projects/{id}/tasks")
     @JsonView(Views.ProjectsTaskView.class)
     public ResponseEntity<Set<Task>> findProjectsTasks(@PathVariable Long id) {
-        return new ResponseEntity<>(projectService.getTasks(id), HttpStatus.OK);
+        return new ResponseEntity<>(projectService.findProjectById(id).getTasks(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "projects/{id}/logworks")
+    @JsonView(Views.LogworkViewInProject.class)
+    public ResponseEntity<Set<LogWork>> getUsersLogworksInProject(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly) {
+        return new ResponseEntity<>(logworkService.getUsersLogworksInProject(id, localDateConverter.createDate(date), weekly), HttpStatus.OK);
     }
 }

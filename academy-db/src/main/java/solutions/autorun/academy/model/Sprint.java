@@ -1,5 +1,6 @@
 package solutions.autorun.academy.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 @Data
 @Entity
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Sprint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

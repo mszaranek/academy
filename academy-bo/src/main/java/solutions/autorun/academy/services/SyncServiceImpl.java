@@ -47,7 +47,10 @@ public class SyncServiceImpl implements SyncService {
         Runtime run = Runtime.getRuntime();
         Process proc = run.exec(command);
 
-
+        command = "java -jar trello-wrapper.jar bma " + revisionDate;
+        log.info("Running " + command);
+        Runtime run1 = Runtime.getRuntime();
+        Process proc1 = run1.exec(command);
 
     }
 }

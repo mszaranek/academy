@@ -35,4 +35,6 @@ public interface LogworkService {
 
     void deleteLogwork(Long id);
 
+    Set<LogWork> getLogworksOfUser(Long id, LocalDate date, boolean weekly);
 }
+

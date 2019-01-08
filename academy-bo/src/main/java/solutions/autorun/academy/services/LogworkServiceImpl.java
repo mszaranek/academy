@@ -226,6 +226,18 @@ public class LogworkServiceImpl implements LogworkService {
     }
 
     @Override
+    public Set<LogWork> getLogworksOfUser(Long id, LocalDate localDate, boolean weekly) {
+        Set<LogWork> logWorks;
+        if(weekly){
+            logWorks = getUserLogworkWeek(id, localDate, true);
+        }
+        else{
+            logWorks = getUserLogworkMonth(id, localDate, true);
+        }
+        return  logWorks;
+    }
+
+    @Override
     public void deleteLogwork(Long id) {
         logworkRepository.delete(logworkRepository.findById(id)
                 .orElseThrow((() -> new NotFoundException("logwork not found"))));

@@ -29,6 +29,12 @@ public class LogWorkController {
         return new ResponseEntity<>(logworkService.getUserLogwork(id, localDateConverter.createDate(date), weekly), HttpStatus.OK);
     }
 
+    @GetMapping(value = "users/{id}/logworks/user/{userId}")
+    @JsonView(Views.LogworkView.class)
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    public ResponseEntity<Set<LogWork>> getLogworksOfUser(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly, @PathVariable Long userId) {
+        return new ResponseEntity<>(logworkService.getLogworksOfUser(userId, localDateConverter.createDate(date), weekly), HttpStatus.OK);
+    }
 
     @GetMapping(value = "users/{id}/logworks/accept")
     @JsonView(Views.LogworkView.class)

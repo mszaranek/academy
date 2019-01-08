@@ -187,7 +187,7 @@ public class LogworkServiceImpl implements LogworkService {
     }
 
     @Override
-    public Set<LogWork> acceptLogworks(Long id, LocalDate localDate, boolean weekly, Long userId) {
+    public Set<LogWork> acceptLogworks(Long id, LocalDate localDate, boolean weekly, Long userId, String status) {
         Set<LogWork> logWorks = new HashSet<>();
         if(weekly){
             logWorks = getUserLogworkWeek(userId, localDate, true);
@@ -197,17 +197,17 @@ public class LogworkServiceImpl implements LogworkService {
         }
 
         for (LogWork logWork: logWorks) {
-            logWork.setStatus("accepted");
+            logWork.setStatus(status);
             logworkRepository.save(logWork);
         }
         return logWorks;
     }
 
     @Override
-    public Set<LogWork> acceptDayLogworks(Long id, LocalDate localDate, Long userId) {
+    public Set<LogWork> acceptDayLogworks(Long id, LocalDate localDate, Long userId, String status) {
         Set<LogWork> logWorks = getUserLogworkDay(userId, localDate, true);
         for (LogWork logWork: logWorks){
-            logWork.setStatus("accepted");
+            logWork.setStatus(status);
             logworkRepository.save(logWork);
         }
         return logWorks;

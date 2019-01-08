@@ -29,9 +29,9 @@ public interface LogworkService {
 
     Set<LogWork> sendDayToValidation(Long id, LocalDate localDate);
 
-    Set<LogWork> acceptLogworks(Long id, LocalDate localDate, boolean weekly, Long userId);
+    Set<LogWork> acceptLogworks(Long id, LocalDate localDate, boolean weekly, Long userId, String status);
 
-    Set<LogWork> acceptDayLogworks(Long id, LocalDate localDate, Long userId);
+    Set<LogWork> acceptDayLogworks(Long id, LocalDate localDate, Long userId, String status);
 
     void deleteLogwork(Long id);
 

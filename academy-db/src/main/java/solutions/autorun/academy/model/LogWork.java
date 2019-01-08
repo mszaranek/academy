@@ -30,6 +30,8 @@ public class LogWork {
     @JsonView({Views.UserView.class, Views.LogworkView.class, Views.LogworkViewInProject.class})
     private String status;
     @JsonView({Views.UserView.class, Views.LogworkView.class, Views.LogworkViewInProject.class})
+    private String verifyMethodUsed;
+    @JsonView({Views.UserView.class, Views.LogworkView.class, Views.LogworkViewInProject.class})
     private LocalDate date;
     @JsonView({Views.UserView.class, Views.LogworkView.class, Views.LogworkViewInProject.class})
     private String description;

@@ -33,15 +33,15 @@ public class LogWorkController {
     @GetMapping(value = "users/{id}/logworks/accept")
     @JsonView(Views.LogworkView.class)
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
-    public ResponseEntity<Set<LogWork>> acceptLogworks(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly, @RequestParam Long userId) {
-        return new ResponseEntity<>(logworkService.acceptLogworks(id, localDateConverter.createDate(date), weekly, userId), HttpStatus.OK);
+    public ResponseEntity<Set<LogWork>> acceptLogworks(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly, @RequestParam Long userId, @RequestParam String status) {
+        return new ResponseEntity<>(logworkService.acceptLogworks(id, localDateConverter.createDate(date), weekly, userId, status), HttpStatus.OK);
     }
 
     @GetMapping(value = "users/{id}/logworks/accept/day")
     @JsonView(Views.LogworkView.class)
     @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
-    public ResponseEntity<Set<LogWork>> acceptDayLogworks(@PathVariable Long id, @RequestParam String date, @RequestParam Long userId) {
-        return new ResponseEntity<>(logworkService.acceptDayLogworks(userId, localDateConverter.createDate(date), userId), HttpStatus.OK);
+    public ResponseEntity<Set<LogWork>> acceptDayLogworks(@PathVariable Long id, @RequestParam String date, @RequestParam Long userId, @RequestParam String status) {
+        return new ResponseEntity<>(logworkService.acceptDayLogworks(userId, localDateConverter.createDate(date), userId, status), HttpStatus.OK);
     }
 
     @GetMapping(value = "users/{id}/logworks/validate")

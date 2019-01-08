@@ -31,6 +31,7 @@ public class LogworkServiceImpl implements LogworkService {
         LogWork logWork = new LogWork();
         logWork.setId(null);
         logWork.setStatus("inProgress");
+        logWork.setVerifyMethodUsed(null);
         logWork.setDate(localDateConverter.createDate(logWorkDTO.getDate()));
         logWork.setDescription(logWorkDTO.getDescription());
         logWork.setWorkedTime(logWorkDTO.getWorkedTime());
@@ -56,6 +57,7 @@ public class LogworkServiceImpl implements LogworkService {
         logWork.setDate(localDateConverter.createDate(logWorkDTO.getDate()));
         logWork.setTask(taskService.findTaskById(taskId));
         logWork.setStatus("corrected");
+        logWork.setVerifyMethodUsed(null);
         return logworkRepository.save(logWork);
     }
 
@@ -155,15 +157,19 @@ public class LogworkServiceImpl implements LogworkService {
     @Override
     public Set<LogWork> sendToValidation(Long id, LocalDate localDate, boolean weekly) {
         Set<LogWork> logWorks = new HashSet<>();
+        String verifyStatus = null;
         if(weekly){
             logWorks = getUserLogworkWeek(id, localDate, false);
+            verifyStatus = "week";
         }
         else if (!weekly){
             logWorks = getUserLogworkMonth(id, localDate, false);
+            verifyStatus = "month";
         }
 
         for (LogWork logWork: logWorks) {
             logWork.setStatus("sentToValidation");
+            logWork.setVerifyMethodUsed(verifyStatus);
             logworkRepository.save(logWork);
         }
         return logWorks;
@@ -174,6 +180,7 @@ public class LogworkServiceImpl implements LogworkService {
 
         for (LogWork logWork: logWorks) {
             logWork.setStatus("sentToValidation");
+            logWork.setVerifyMethodUsed("day");
             logworkRepository.save(logWork);
         }
         return logWorks;

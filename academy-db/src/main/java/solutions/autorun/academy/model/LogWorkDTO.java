@@ -8,6 +8,7 @@ public class LogWorkDTO {
     private String description;
     private Long workedTime;
     private String status;
+    private String verifyMethodUsed;
 
     public String getDate() {
         return date;

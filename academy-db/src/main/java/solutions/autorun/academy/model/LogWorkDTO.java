@@ -8,7 +8,14 @@ public class LogWorkDTO {
     private String description;
     private Long workedTime;
     private String status;
-    private String verifyMethodUsed;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getDate() {
         return date;

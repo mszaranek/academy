@@ -168,9 +168,11 @@ public class LogworkServiceImpl implements LogworkService {
         }
 
         for (LogWork logWork: logWorks) {
-            logWork.setStatus("sentToValidation");
-            logWork.setVerifyMethodUsed(verifyStatus);
-            logworkRepository.save(logWork);
+            if(logWork.getStatus() == "inProgress"){
+                logWork.setStatus("sentToValidation");
+                logWork.setVerifyMethodUsed(verifyStatus);
+                logworkRepository.save(logWork);
+            }
         }
         return logWorks;
     }

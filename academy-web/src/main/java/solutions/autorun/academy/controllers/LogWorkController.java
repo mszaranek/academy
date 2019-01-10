@@ -31,21 +31,21 @@ public class LogWorkController {
 
     @GetMapping(value = "users/{id}/logworks/user/{userId}")
     @JsonView(Views.LogworkView.class)
-    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)  AND hasRole('ROLE_MANAGER')")
     public ResponseEntity<Set<LogWork>> getLogworksOfUser(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly, @PathVariable Long userId) {
         return new ResponseEntity<>(logworkService.getLogworksOfUser(userId, localDateConverter.createDate(date), weekly), HttpStatus.OK);
     }
 
     @GetMapping(value = "users/{id}/logworks/accept")
     @JsonView(Views.LogworkView.class)
-    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)  AND hasRole('ROLE_MANAGER')")
     public ResponseEntity<Set<LogWork>> acceptLogworks(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly, @RequestParam Long userId, @RequestParam String status) {
         return new ResponseEntity<>(logworkService.acceptLogworks(id, localDateConverter.createDate(date), weekly, userId, status), HttpStatus.OK);
     }
 
     @GetMapping(value = "users/{id}/logworks/accept/day")
     @JsonView(Views.LogworkView.class)
-    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)  AND hasRole('ROLE_MANAGER')")
     public ResponseEntity<Set<LogWork>> acceptDayLogworks(@PathVariable Long id, @RequestParam String date, @RequestParam Long userId, @RequestParam String status) {
         return new ResponseEntity<>(logworkService.acceptDayLogworks(userId, localDateConverter.createDate(date), userId, status), HttpStatus.OK);
     }
@@ -79,7 +79,7 @@ public class LogWorkController {
     }
 
     @PutMapping(value = "users/{id}/logworks/correct")
-    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)")
+    @PreAuthorize("@userRepository.findOneByUsername(authentication.name)==@userRepository.findById(#id)   AND hasRole('ROLE_MANAGER')")
     @JsonView(Views.LogworkView.class)
     public ResponseEntity<LogWork> updateLogworkByManager(@PathVariable Long id, @RequestBody LogWorkDTO logWork,@RequestParam Long logWorkId, @RequestParam Long taskId){
         return new ResponseEntity<>(logworkService.updateLogworkByManager(logWorkId, logWork, taskId), HttpStatus.OK);

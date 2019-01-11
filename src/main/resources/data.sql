@@ -52,3 +52,6 @@ INSERT INTO public.project_user (project_id, user_id) VALUES (3, 2);
 INSERT INTO public.user_app_role (user_id, app_role_id) VALUES (2, 2);
 INSERT INTO public.user_app_role (user_id, app_role_id) VALUES (1, 1);
 INSERT INTO public.user_app_role (user_id, app_role_id) VALUES (3, 3);
+INSERT INTO public.proj_role(id, role_name) VALUES (1, 'ROLE_TEST1');
+INSERT INTO public.proj_role(id, role_name) VALUES (2, 'ROLE_TEST2');
+INSERT INTO public.proj_role(id, role_name) VALUES (2, 'ROLE_TEST3');

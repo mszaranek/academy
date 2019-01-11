@@ -259,4 +259,11 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping(value = "users/{id}/projrole")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_MANAGER')")
+    public ResponseEntity<Void> addProjroleToUser(@PathVariable Long id,@PathVariable Long projroleId) {
+        userService.addProjroleToUser(id, projroleId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

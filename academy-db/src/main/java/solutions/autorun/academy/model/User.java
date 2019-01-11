@@ -81,8 +81,19 @@ public class User {
     //@JsonManagedReference(value = "user_invoice")
     private Set<Invoice> invoices = new HashSet<>();
 
+    @ManyToOne
+    private ProjRole projRole;
+
     public Long getId() {
         return this.id;
+    }
+
+    public ProjRole getProjRole() {
+        return projRole;
+    }
+
+    public void setProjRole(ProjRole projRole) {
+        this.projRole = projRole;
     }
 
     public String getUsername() {

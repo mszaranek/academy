@@ -200,6 +200,7 @@ public class LogworkServiceImpl implements LogworkService {
 
         for (LogWork logWork: logWorks) {
             logWork.setStatus(status);
+            logWork.setVerifyMethodUsed("day");
             logworkRepository.save(logWork);
         }
         return logWorks;

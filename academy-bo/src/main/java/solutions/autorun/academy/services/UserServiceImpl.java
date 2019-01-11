@@ -15,6 +15,7 @@ import solutions.autorun.academy.exceptions.NotFoundException;
 import solutions.autorun.academy.exceptions.UsernameAlreadyUsedException;
 import solutions.autorun.academy.model.*;
 import solutions.autorun.academy.repositories.AppRoleRepository;
+import solutions.autorun.academy.repositories.ProjRoleRepository;
 import solutions.autorun.academy.repositories.UserRepository;
 import solutions.autorun.academy.repositories.VerificationTokenRepository;
 
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final ProjRoleRepository projRoleRepository;
     private final AppRoleRepository appRoleRepository;
     private final UserRepository userRepository;
     private final VerificationTokenRepository tokenRepository;
@@ -180,6 +182,13 @@ public class UserServiceImpl implements UserService {
     public void addApproleToUser(Long id, Long approleId) {
         User user = userRepository.findById(id).get();
         user.getAppRoles().add(appRoleRepository.findById(approleId).get());
+        userRepository.save(user);
+    }
+
+    @Override
+    public void addProjroleToUser(Long id, Long projroleId) {
+        User user = userRepository.findById(id).get();
+        user.setProjRole(projRoleRepository.findById(projroleId).get());
         userRepository.save(user);
     }
 }

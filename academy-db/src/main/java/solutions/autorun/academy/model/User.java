@@ -49,9 +49,8 @@ public class User {
     @JsonView(Views.UserView.class)
     private boolean activated;
 
-
-    @ManyToMany
     @JsonView(Views.UserView.class)
+    @ManyToMany
     @JoinTable(name = "project_user", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id"))
    // @JsonBackReference(value = "project_users")

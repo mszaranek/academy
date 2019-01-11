@@ -33,6 +33,5 @@ public interface UserService {
 
     void saveRegisteredUser(User user);
 
-
-
+    void addApproleToUser(Long id, Long approleId);
 }

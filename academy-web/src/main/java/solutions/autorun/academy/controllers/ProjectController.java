@@ -7,14 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import solutions.autorun.academy.Converter.LocalDateConverter;
-import solutions.autorun.academy.model.Invoice;
-import solutions.autorun.academy.model.LogWork;
-import solutions.autorun.academy.model.Project;
-import solutions.autorun.academy.model.Task;
+import solutions.autorun.academy.model.*;
 import solutions.autorun.academy.services.LogworkService;
 import solutions.autorun.academy.services.ProjectService;
 import solutions.autorun.academy.views.Views;
 
+import java.lang.System;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -39,7 +37,7 @@ public class ProjectController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<Void> createProject(@RequestBody Project project) {
         projectService.createProject(project);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(value = "projects/{id}")
@@ -76,5 +74,26 @@ public class ProjectController {
     @JsonView(Views.LogworkViewInProject.class)
     public ResponseEntity<Set<LogWork>> getUsersLogworksInProject(@PathVariable Long id, @RequestParam String date, @RequestParam boolean weekly) {
         return new ResponseEntity<>(logworkService.getUsersLogworksInProject(id, localDateConverter.createDate(date), weekly), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/projects/{id}/user")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_MANAGER')")
+    public ResponseEntity<Void> addUserToProject(@PathVariable Long id, @RequestParam Long userId) {
+        projectService.addUserToProject(id, userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/projects/{id}/invoice")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_MANAGER')")
+    public ResponseEntity<Void> addInvoiceToProject(@PathVariable Long id, @RequestParam Long invoiceId) {
+        projectService.addInvoiceToProject(id, invoiceId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/projects/{id}/system")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_MANAGER')")
+    public ResponseEntity<Void> addSystemToProject(@PathVariable Long id, @RequestParam Long systemId) {
+        projectService.addSystemToProject(id, systemId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

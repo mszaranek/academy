@@ -252,6 +252,11 @@ public class UserController {
         return new ResponseEntity<>(taskService.getEstimate(taskId,id), HttpStatus.OK);
     }
 
-
+    @GetMapping(value = "users/{id}/approle")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_MANAGER')")
+    public ResponseEntity<Void> addApproleToUser(@PathVariable Long id,@PathVariable Long approleId) {
+        userService.addApproleToUser(id, approleId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }

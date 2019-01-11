@@ -175,4 +175,11 @@ public class UserServiceImpl implements UserService {
 
         return page;
     }
+
+    @Override
+    public void addApproleToUser(Long id, Long approleId) {
+        User user = userRepository.findById(id).get();
+        user.getAppRoles().add(appRoleRepository.findById(approleId).get());
+        userRepository.save(user);
+    }
 }

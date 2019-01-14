@@ -181,9 +181,11 @@ public class LogworkServiceImpl implements LogworkService {
         Set<LogWork> logWorks = getUserLogworkDay(id, localDate, false);
 
         for (LogWork logWork: logWorks) {
-            logWork.setStatus("sentToValidation");
-            logWork.setVerifyMethodUsed("day");
-            logworkRepository.save(logWork);
+            if(logWork.getStatus().equals("inProgress")){
+                logWork.setStatus("sentToValidation");
+                logWork.setVerifyMethodUsed("day");
+                logworkRepository.save(logWork);
+            }
         }
         return logWorks;
     }
@@ -199,9 +201,11 @@ public class LogworkServiceImpl implements LogworkService {
         }
 
         for (LogWork logWork: logWorks) {
-            logWork.setStatus(status);
-            logWork.setVerifyMethodUsed("day");
-            logworkRepository.save(logWork);
+            if(logWork.getStatus().equals("sentToValidation")){
+                logWork.setStatus(status);
+                logWork.setVerifyMethodUsed("week");
+                logworkRepository.save(logWork);
+            }
         }
         return logWorks;
     }
@@ -210,8 +214,11 @@ public class LogworkServiceImpl implements LogworkService {
     public Set<LogWork> acceptDayLogworks(Long id, LocalDate localDate, Long userId, String status) {
         Set<LogWork> logWorks = getUserLogworkDay(userId, localDate, true);
         for (LogWork logWork: logWorks){
-            logWork.setStatus(status);
-            logworkRepository.save(logWork);
+            if(logWork.getStatus().equals("sentToValidation")){
+                logWork.setStatus(status);
+                logWork.setVerifyMethodUsed("day");
+                logworkRepository.save(logWork);
+            }
         }
         return logWorks;
     }

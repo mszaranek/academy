@@ -266,4 +266,11 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping(value = "users/{id}/tasks")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_MANAGER')")
+    public ResponseEntity<Void> addTaskToUser(@PathVariable Long id,@PathVariable Long taskId) {
+        userService.addTaskToUser(id, taskId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

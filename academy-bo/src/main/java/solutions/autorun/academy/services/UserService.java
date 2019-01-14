@@ -36,4 +36,6 @@ public interface UserService {
     void addApproleToUser(Long id, Long approleId);
 
     void addProjroleToUser(Long id, Long projroleId);
+
+    void addTaskToUser(Long id, Long taskId);
 }

@@ -16,7 +16,7 @@ public class ProjRole {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String roleName;
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "projrole")
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "projRole")
     private Set<User> users;
 
     @ManyToMany

@@ -14,10 +14,7 @@ import solutions.autorun.academy.exceptions.EmailAlreadyUsedException;
 import solutions.autorun.academy.exceptions.NotFoundException;
 import solutions.autorun.academy.exceptions.UsernameAlreadyUsedException;
 import solutions.autorun.academy.model.*;
-import solutions.autorun.academy.repositories.AppRoleRepository;
-import solutions.autorun.academy.repositories.ProjRoleRepository;
-import solutions.autorun.academy.repositories.UserRepository;
-import solutions.autorun.academy.repositories.VerificationTokenRepository;
+import solutions.autorun.academy.repositories.*;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
@@ -35,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final ProjRoleRepository projRoleRepository;
     private final AppRoleRepository appRoleRepository;
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
     private final VerificationTokenRepository tokenRepository;
     private final EntityManager entityManager;
     private final PasswordEncoder passwordEncoder;
@@ -189,6 +187,13 @@ public class UserServiceImpl implements UserService {
     public void addProjroleToUser(Long id, Long projroleId) {
         User user = userRepository.findById(id).get();
         user.setProjRole(projRoleRepository.findById(projroleId).get());
+        userRepository.save(user);
+    }
+
+    @Override
+    public void addTaskToUser(Long id, Long taskId) {
+        User user = userRepository.findById(id).get();
+        user.getTasks().add(taskRepository.findById(taskId).get());
         userRepository.save(user);
     }
 }
